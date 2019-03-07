@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28407.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sciensoft.Hateoas", "src\Sciensoft.Hateoas\Sciensoft.Hateoas.csproj", "{D174B9CA-7BCA-4010-9031-E70D383C27B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CDFC3856-3231-44CF-9972-DFD812DC8EB3}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0AA25AF0-5B7D-4F40-B273-AD7E8CE1F158}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{678EA97C-0AAC-4290-966C-F864DD540292}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{26D01382-6338-4B1D-AD40-7849B224F281}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sciensoft.Hateoas.WebSample", "samples\Sciensoft.Hateoas.WebSample\Sciensoft.Hateoas.WebSample.csproj", "{B84AC3ED-B837-410B-AF4D-98E6C78FE500}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sciensoft.Hateoas.Tdd", "tests\Sciensoft.Hateoas.Tdd\Sciensoft.Hateoas.Tdd.csproj", "{BFC38BEF-C7E3-482A-A89C-EE63950A831B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D174B9CA-7BCA-4010-9031-E70D383C27B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D174B9CA-7BCA-4010-9031-E70D383C27B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D174B9CA-7BCA-4010-9031-E70D383C27B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D174B9CA-7BCA-4010-9031-E70D383C27B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B84AC3ED-B837-410B-AF4D-98E6C78FE500}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B84AC3ED-B837-410B-AF4D-98E6C78FE500}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B84AC3ED-B837-410B-AF4D-98E6C78FE500}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B84AC3ED-B837-410B-AF4D-98E6C78FE500}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFC38BEF-C7E3-482A-A89C-EE63950A831B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFC38BEF-C7E3-482A-A89C-EE63950A831B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFC38BEF-C7E3-482A-A89C-EE63950A831B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFC38BEF-C7E3-482A-A89C-EE63950A831B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D174B9CA-7BCA-4010-9031-E70D383C27B7} = {0AA25AF0-5B7D-4F40-B273-AD7E8CE1F158}
+		{B84AC3ED-B837-410B-AF4D-98E6C78FE500} = {26D01382-6338-4B1D-AD40-7849B224F281}
+		{BFC38BEF-C7E3-482A-A89C-EE63950A831B} = {678EA97C-0AAC-4290-966C-F864DD540292}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F17219F3-6F49-459E-A7C9-F2DF90DCA35D}
+	EndGlobalSection
+EndGlobal
