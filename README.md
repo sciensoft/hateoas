@@ -6,9 +6,9 @@ A library to help you achieve HATEOAS using a fluent language and lambda express
 
 **The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with `Sciensoft.Hateoas`**.
 
-Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce [REST constraints][REST-Constraints] or [Richardson Maturity Level][Richardson-Maturity-Level] and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
+Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce <a href="https://medium.com/extend/what-is-rest-a-simple-explanation-for-beginners-part-2-rest-constraints-129a4b69a582" target="_blank">REST constraints</a> or <a href="https://martinfowler.com/articles/richardsonMaturityModel.html" target="_blank">Richardson Maturity Level</a> and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
 
-Learn more about RESTful API [here][Learn-RestfulApi] and Lambda Expressions [here][Lambda-Expressions].
+Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions" target="_blank">here</a>.
 
 ## Get Started
 
@@ -89,7 +89,6 @@ public void ConfigureServices(IServiceCollection services)
  - Add support for .NET Authorization
  - Add support for Content Negotiation type in the read-model
  - Add support for Absolute or Relative links configuration
- - Set repository to public on Git
  - Create project website
 
 
@@ -104,7 +103,7 @@ A good advice to starting contributing is helping me out with existing issues.
 
 ## Issues
 
-To open an issue or even suggest a feature, please use the [Issues](./issues) tab.
+To open an issue or even suggest a feature, please use the [Issues](./../../issues) tab.
 
 
 ## License
