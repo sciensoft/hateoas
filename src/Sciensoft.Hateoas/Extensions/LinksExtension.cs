@@ -24,7 +24,7 @@ namespace Sciensoft.Hateoas.Extensions
 			services.AddTransient<IHateoasResultProvider, HateoasResultProvider>();
 
 			services
-				.AddMvc(setup =>
+				.AddMvcCore(setup =>
 				{
 					setup.Filters.Add<LocationUriResultFilter>();
 					setup.Filters.Add<HateoasResultFilter>();

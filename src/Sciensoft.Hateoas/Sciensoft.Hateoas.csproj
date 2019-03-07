@@ -2,18 +2,29 @@
 
 	<PropertyGroup>
 		<AssemblyName>Sciensoft.Hateoas</AssemblyName>
-		<!--<TargetFramework>netstandard2.0</TargetFramework>-->
-		<TargetFramework>netcoreapp2.2</TargetFramework>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<VersionPrefix>1.0.1</VersionPrefix>
 		<OutputType>Library</OutputType>
+		<RepositoryUrl>https://github.com/higtrollers/Sciensoft.Hateoas</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/higtrollers/Sciensoft.Hateoas</PackageProjectUrl>
+		<Description>
+			A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core WebApi apps. It's based on REST application architecture style **Uniform Interface** constraint _hypermedia as the engine of application state (HATEOAS)_.
+
+			**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with `Sciensoft.Hateoas`**.
+
+			Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce [REST constraints][REST-Constraints] or [Richardson Maturity Level][Richardson-Maturity-Level] and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
+
+			Learn more about RESTful API [here][Learn-RestfulApi] and Lambda Expressions [here][Lambda-Expressions].
+
+			For more, visit [Sciensoft.Hateoas](https://github.com/higtrollers/Sciensoft.Hateoas)!
+		</Description>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="AutoMapper" Version="8.0.0" />
-		
+
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
-		<PackageReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>

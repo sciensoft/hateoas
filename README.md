@@ -1,6 +1,8 @@
 # Sciensoft.Hateoas
 
-A library to help you achieve HATEOAS using an fluent language and lambda expression for configuring your ASP.NET Core WebApi apps. It's based on REST application architecture style **Uniform Interface** constraint _hypermedia as the engine of application state (HATEOAS)_.
+![Build](https://higtrollers.visualstudio.com/Sciensoft/_apis/build/status/SDK/Sciensoft.Hateoas)
+
+A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core WebApi apps. It's based on REST application architecture style **Uniform Interface** constraint _hypermedia as the engine of application state (HATEOAS)_.
 
 **The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with `Sciensoft.Hateoas`**.
 
@@ -12,7 +14,7 @@ Learn more about RESTful API [here][Learn-RestfulApi] and Lambda Expressions [he
 
 Sciensoft.Hateoas can be installed using Nuget package manager or `dotnet` CLI.
 
-```:
+```
 Install Sciensoft.Hateoas
 ```
 
@@ -21,7 +23,7 @@ Install Sciensoft.Hateoas
 
 Using a fluent language, it can be configured easily adding the service to .NET dependency inversion pipeline.
 
-```:
+```csharp
 public void ConfigureServices(IServiceCollection services)
 {
   services
@@ -43,7 +45,7 @@ public void ConfigureServices(IServiceCollection services)
 
 **Json Result Sample**
 
-```:
+```json
 {
     "id": "571be3ce-7ac5-4d99-9872-c6bc868db092",
     "name": "Hello Sample View",
@@ -84,13 +86,14 @@ public void ConfigureServices(IServiceCollection services)
 
 ### Roadmap
 
- - Add support for Absolute or Relative links configuration
  - Add support for .NET Authorization
+ - Add support for Content Negotiation type in the read-model
+ - Add support for Absolute or Relative links configuration
  - Set repository to public on Git
  - Create project website
 
 
-## Constributions
+## Contributions
 
 You are welcome to contribute to this project, please clone this repository and go ahead working in your feature branch, after just submit a Pull Request.
 
@@ -112,13 +115,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-
-## TODOs
-
-It's a better implementation and expectation of '[RiskFirst.Hateoas][RiskFirst.Hateoas]' functionality.
-
-
-[RiskFirst.Hateoas]:https://github.com/riskfirst/riskfirst.hateoas/blob/master/README.md
 
 
 [Learn-RestfulApi]:https://restfulapi.net/
