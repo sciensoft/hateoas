@@ -10,9 +10,10 @@ Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration s
 
 Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions" target="_blank">here</a>.
 
+
 ## Get Started
 
-Sciensoft.Hateoas can be installed using [Nuget](https://www.nuget.org/packages/Sciensoft.Hateoas/) package manager or `dotnet` CLI.
+Sciensoft.Hateoas can be installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager or `dotnet` CLI.
 
 ```
 Install Sciensoft.Hateoas
@@ -103,7 +104,7 @@ A good advice to starting contributing is helping me out with existing issues.
 
 ## Issues
 
-To open an issue or even suggest a feature, please use the [Issues](./../../issues) tab.
+To open an issue or even suggest a feature, please use the [Issues](./issues) tab.
 
 
 ## License
