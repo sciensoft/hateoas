@@ -104,7 +104,7 @@ A good advice to starting contributing is helping me out with existing issues.
 
 ## Issues
 
-To open an issue or even suggest a feature, please use the [Issues](./issues) tab.
+To open an issue or even suggest a feature, please use the [Issues](./../../issues) tab.
 
 
 ## License
