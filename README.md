@@ -12,7 +12,7 @@ Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">h
 
 ## Get Started
 
-Sciensoft.Hateoas can be installed using Nuget package manager or `dotnet` CLI.
+Sciensoft.Hateoas can be installed using [Nuget](https://www.nuget.org/packages/Sciensoft.Hateoas/) package manager or `dotnet` CLI.
 
 ```
 Install Sciensoft.Hateoas
