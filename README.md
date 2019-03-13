@@ -95,11 +95,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ## Contributions
 
-You are welcome to contribute to this project, please clone this repository and go ahead working in your feature branch, after just submit a Pull Request.
-
-Before doing a major change, have a look to the existing Pull Requests, one of them may be tackling the same thing.
-
-A good advice to starting contributing is helping me out with existing issues.
+Before start contributing, check our [CONTRIBUTING](CONTRIBUTING.md) guideline out, also, before doing a major change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
 
 
 ## Issues
