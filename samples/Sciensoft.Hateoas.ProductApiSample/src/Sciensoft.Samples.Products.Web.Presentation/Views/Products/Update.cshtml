@@ -1,0 +1,37 @@
+﻿@model Product.Output
+
+@section ContentHeader {
+    @Model.Name
+}
+
+@section ContentHeaderSub {
+    @Model.Price
+}
+
+<div>@ViewData["ErrorMessage"]</div>
+
+<form asp-controller="Products" asp-action="Update" method="post" class="mb-5">
+    @{
+        ViewData["ETag"] = ViewData["ETag"];
+    }
+
+    <div class="form-group col-5">
+        <label asp-for="@Model.Name"></label>
+        <input asp-for="@Model.Name" value="@Model.Name" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <div class="col-2">
+            <label asp-for="@Model.Price"></label>
+            <input id="Price.Value" name="Price.Value" type="number" value="@Model.Price" class="form-control" />
+        </div>
+        <label class="form-check">
+            <input id="Price.Approved" name="Price.Approved" type="checkbox" /> I approve values over <strong>$999</strong>.
+        </label>
+    </div>
+
+    <div class="col-10">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <input type="button" onclick="history.back()" class="btn btn-secondary" value="Cancel" />
+    </div>
+</form>

@@ -1,0 +1,10 @@
+﻿@section ContentHeader  {
+    Ops, 404 - Page not found.
+}
+
+@section ContentHeaderSub {
+    Correlation ID: <span class="btn btn-info">@CorrelationProvider.CorrelationId</span>
+}
+
+<p>We cannot find what you're looking for, <a href="javascript:history.back()">go back</a> to the previous page, or <a href="/">return main</a>.</p>
+<p>If it's still happening, contact support with id <span class="btn btn-warning"><em>@CorrelationProvider.CorrelationId</em></span>, thanks!</p>

@@ -1,0 +1,25 @@
+﻿@model IList<Product.Output>
+
+@section ContentHeader  {
+    Products
+}
+
+@section ContentHeaderSub  {
+    List all available products.
+}
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 mb-5">
+            <h3>@product.Name</h3>
+            <span>Price: @product.Price</span>
+
+            <div>
+                <a class="btn btn-info" href="@Url.Action("Get", values: new { Code = product.Code })">View</a>
+                <a class="btn btn-primary" href="@Url.Action("Update", values: new { Code = product.Code })">Edit</a>
+                @*<a class="btn btn-danger" href="@Url.Action("Delete", values: new { Code = product.Code })">Delete</a>*@
+            </div>
+        </div>
+    }
+</div>

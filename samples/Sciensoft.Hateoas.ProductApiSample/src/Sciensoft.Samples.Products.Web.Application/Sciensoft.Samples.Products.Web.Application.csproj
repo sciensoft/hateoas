@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\libraries\Sciensoft.Samples.Products.Abstractions\Sciensoft.Samples.Products.Abstractions.csproj" />
+    <ProjectReference Include="..\..\libraries\Sciensoft.Samples.Products.AspNetCore\Sciensoft.Samples.Products.AspNetCore.csproj" />
+    <ProjectReference Include="..\Sciensoft.Samples.Products.Api.Infrastructure\Sciensoft.Samples.Products.Api.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
