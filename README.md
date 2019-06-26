@@ -10,15 +10,13 @@ Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration s
 
 Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions" target="_blank">here</a>.
 
-
 ## Get Started
 
 Sciensoft.Hateoas can be installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager or `dotnet` CLI.
 
-```
+```bash
 Install-Package Sciensoft.Hateoas
 ```
-
 
 ### Configuration
 
@@ -44,7 +42,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-**Json Result Sample**
+**Json Result:**
 
 ```json
 {
@@ -80,28 +78,24 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-
 ## Features
 
- - Hateoas configuration with Lambda Expression
+- Hateoas configuration with Lambda Expression
 
 ### Roadmap
 
- - Add support for .NET Authorization
- - Add support for Content Negotiation type in the read-model
- - Add support for Absolute or Relative links configuration
- - Create project website
-
+- Add support for .NET Authorization
+- Add support for Content Negotiation type in the read-model
+- Add support for Absolute or Relative links configuration
+- Create project website
 
 ## Contributions
 
-Before start contributing, check our [CONTRIBUTING](CONTRIBUTING.md) guideline out, also, before doing a major change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
-
+Before start contributing, check our [CONTRIBUTING] guideline out, also, before doing a major change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
 
 ## Issues
 
-To open an issue or even suggest a feature, please use the [Issues](./../../issues) tab.
-
+To open an issue or even suggest a feature, please use the [Issues] tab.
 
 ## License
 
@@ -111,9 +105,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-
+[## LINKS ##]: ----------------------------------------------------------
 
 [Learn-RestfulApi]:https://restfulapi.net/
 [Lambda-Expressions]:https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions
 [Richardson-Maturity-Level]:https://martinfowler.com/articles/richardsonMaturityModel.html
 [REST-Constraints]:https://medium.com/extend/what-is-rest-a-simple-explanation-for-beginners-part-2-rest-constraints-129a4b69a582
+[CONTRIBUTING]: ./CONTRIBUTING.md
+[Issues]: ./../../issues
