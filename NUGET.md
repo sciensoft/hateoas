@@ -16,7 +16,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-
 [Learn-RestfulApi]:https://restfulapi.net/
 [Lambda-Expressions]:https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions
 [Richardson-Maturity-Level]:https://martinfowler.com/articles/richardsonMaturityModel.html
