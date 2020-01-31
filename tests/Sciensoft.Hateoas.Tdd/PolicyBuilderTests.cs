@@ -1,10 +1,9 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Linq;
+using FluentAssertions;
 using Sciensoft.Hateoas.Constants;
 using Sciensoft.Hateoas.Exceptions;
 using Sciensoft.Hateoas.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Sciensoft.Hateoas.Tdd

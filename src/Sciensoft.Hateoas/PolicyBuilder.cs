@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 
 namespace Sciensoft.Hateoas
 {
-	// TODO : Create Unit Tests
 	public sealed class PolicyBuilder<T>
 		where T : class
 	{

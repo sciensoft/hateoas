@@ -1,15 +1,15 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Sciensoft.Hateoas.Providers;
 using Sciensoft.Hateoas.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.Filters
 {
@@ -17,7 +17,7 @@ namespace Sciensoft.Hateoas.Filters
 	{
 		readonly IOptions<MvcJsonOptions> _jsonOptions;
 		readonly IHateoasResultProvider _resultProvider;
-
+		
 		public HateoasResultFilter(
 			IOptions<MvcJsonOptions> jsonOptions,
 			IHateoasResultProvider resultProvider)
@@ -71,17 +71,15 @@ namespace Sciensoft.Hateoas.Filters
 
 			var targetPayload = Activator.CreateInstance(targetPayloadType);
 
-			try
+			var mapperConfig = new MapperConfiguration(config =>
 			{
-				Mapper.Initialize(config =>
-				{
-					config.CreateMissingTypeMaps = true;
-					config.CreateMap(sourcePayload.GetType(), targetPayloadType);
-				});
-			}
-			catch { }
+				//config.CreateMissingTypeMaps = true;
+				config.CreateMap(sourcePayload.GetType(), targetPayloadType);
+			});
 
-			Mapper.Map(sourcePayload, targetPayload);
+			mapperConfig
+				.CreateMapper()
+				.Map(sourcePayload, targetPayload);
 
 			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(targetPayload);
 		}

@@ -2,8 +2,7 @@
 
 	<PropertyGroup>
 		<AssemblyName>Sciensoft.Hateoas</AssemblyName>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<VersionPrefix>1.0.1</VersionPrefix>
+		<TargetFramework>netstandard2.1</TargetFramework>
 		<OutputType>Library</OutputType>
 		<RepositoryUrl>https://github.com/higtrollers/Sciensoft.Hateoas</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/higtrollers/Sciensoft.Hateoas</PackageProjectUrl>
@@ -21,8 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="8.0.0" />
-
+		<PackageReference Include="AutoMapper" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
 	</ItemGroup>

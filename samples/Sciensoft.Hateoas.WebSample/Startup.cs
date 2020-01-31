@@ -18,7 +18,10 @@ namespace Sciensoft.Hateoas.WebSample
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services
-				.AddMvc()
+				.AddMvc(options =>
+				{
+					options.EnableEndpointRouting = false;
+				})
 				.AddLinks(policy =>
 				{
 					policy
@@ -41,9 +44,9 @@ namespace Sciensoft.Hateoas.WebSample
 		/// <param name="env"></param>
 		public void Configure(
 			IApplicationBuilder appBuilder,
-			IHostingEnvironment env)
+			IWebHostEnvironment env)
 		{
-			if (env.IsDevelopment())
+			if (env.EnvironmentName.Contains("Development"))
 			{
 				appBuilder.UseDeveloperExceptionPage();
 			}
