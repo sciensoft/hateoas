@@ -87,7 +87,7 @@ namespace Sciensoft.Hateoas.Tdd
 			var policyBuilder = new PolicyBuilder<object>();
 
 			// Act
-			policyBuilder.AddCustom(o => o, linkKey, template);
+			policyBuilder.AddCustomPath(o => o, linkKey, template);
 
 			// Assert
 			PolicyInMemoryRepository.LinksPolicyInMemory
@@ -103,7 +103,7 @@ namespace Sciensoft.Hateoas.Tdd
 			var policyBuilder = new PolicyBuilder<object>();
 
 			// Act
-			Action act = () => policyBuilder.AddCustom(o => o, null);
+			Action act = () => policyBuilder.AddCustomPath(o => o, null);
 
 			// Assert
 			act.Should().Throw<InvalidPolicyConfigurationException>();

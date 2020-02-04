@@ -1,29 +1,28 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Sciensoft.Hateoas.Providers;
+using Sciensoft.Hateoas.Repository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Sciensoft.Hateoas.Providers;
-using Sciensoft.Hateoas.Repository;
 
 namespace Sciensoft.Hateoas.Filters
 {
 	internal class HateoasResultFilter : ResultFilterAttribute
 	{
-		readonly IOptions<MvcJsonOptions> _jsonOptions;
 		readonly IHateoasResultProvider _resultProvider;
-		
+		readonly JsonSerializerOptions _jsonOptions;
+
 		public HateoasResultFilter(
-			IOptions<MvcJsonOptions> jsonOptions,
-			IHateoasResultProvider resultProvider)
+			IHateoasResultProvider resultProvider,
+			JsonSerializerOptions jsonOptions = null)
 		{
-			_jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));
 			_resultProvider = resultProvider ?? throw new ArgumentNullException(nameof(resultProvider));
+			_jsonOptions = jsonOptions;
 		}
 
 		public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -36,13 +35,13 @@ namespace Sciensoft.Hateoas.Filters
 
 					if (policies.Any())
 					{
-						var rawJson = JsonConvert.SerializeObject(result.Value, _jsonOptions.Value.SerializerSettings);
+						var rawJson = JsonSerializer.Serialize(result.Value, _jsonOptions);
 
 						foreach (var policy in policies)
 						{
 							if (policy != null)
 							{
-								var payload = JsonConvert.DeserializeObject(rawJson, policy.Type);
+								var payload = JsonSerializer.Deserialize(rawJson, policy.Type);
 								var lambdaResult = GetLambdaResult(policy.Expression, payload, policy.Type);
 
 								await _resultProvider.AddPolicyAsync(policy, lambdaResult).ConfigureAwait(false);
@@ -65,6 +64,9 @@ namespace Sciensoft.Hateoas.Filters
 		private object GetLambdaResult(Expression expression, object sourcePayload, Type targetPayloadType)
 		{
 			var lambdaExpression = (expression as LambdaExpression);
+
+			if (lambdaExpression == null)
+				return null;
 
 			var parameter = lambdaExpression.Parameters[0];
 			var body = lambdaExpression.Body;

@@ -22,7 +22,7 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 			});
 		}
 
-		[HttpPost(Name = GetWithId)]
+		[HttpPost("{id:guid}", Name = GetWithId)]
 		public ActionResult<SampleViewModel> Post(Guid id)
 		{
 			return Ok(new SampleViewModel

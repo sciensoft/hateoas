@@ -10,6 +10,12 @@ namespace Sciensoft.Hateoas
 	public sealed class PolicyBuilder<T>
 		where T : class
 	{
+		/// <summary>
+		/// Adds self URI to the resource representation.
+		/// </summary>
+		/// <param name="expression"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		public PolicyBuilder<T> AddSelf(Expression<Func<T, object>> expression, string message = null)
 		{
 			PolicyInMemoryRepository.LinksPolicyInMemory.Add(
@@ -22,6 +28,14 @@ namespace Sciensoft.Hateoas
 			return this;
 		}
 
+		/// <summary>
+		/// Adds route based URI to the resource representation.
+		/// </summary>
+		/// <param name="expression"></param>
+		/// <param name="routeName"></param>
+		/// <param name="method"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
 		public PolicyBuilder<T> AddRoute(Expression<Func<T, object>> expression, string routeName, string method = null, string message = null)
 		{
 			if (string.IsNullOrWhiteSpace(routeName))
@@ -39,7 +53,15 @@ namespace Sciensoft.Hateoas
 			return this;
 		}
 
-		public PolicyBuilder<T> AddCustom(Expression<Func<T, object>> expression, string linkKey, string template = null, string method = null, string message = null)
+		/// <summary>
+		/// Adds custom defined URI to the resource representation, e.g., would be pointing to an external URI.
+		/// </summary>
+		/// <param name="expression">Path expression, e.g. @"https://my-external-uri.com/api/resource/{@id}"</param>
+		/// <param name="linkKey">Link identifier</param>
+		/// <param name="method">Resource method as per HTTP methods, e.g. GET/HEAD/POST, for more visit <see cref="https://tools.ietf.org/html/rfc7231#section-4" /></param>
+		/// <param name="message">Usage message</param>
+		/// <returns></returns>
+		public PolicyBuilder<T> AddCustomPath(Expression<Func<T, object>> expression, string linkKey, string method = null, string message = null)
 		{
 			if (string.IsNullOrWhiteSpace(linkKey))
 			{
@@ -49,7 +71,7 @@ namespace Sciensoft.Hateoas
 			PolicyInMemoryRepository.LinksPolicyInMemory.Add(
 				new PolicyInMemoryRepository.TemplatePolicy(typeof(T), expression, linkKey)
 				{
-					Template = template,
+					Template = null,
 					Method = method,
 					Message = message
 				});

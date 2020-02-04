@@ -1,25 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Sciensoft.Hateoas.Repository;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.Providers
 {
 	internal class HateoasResultProvider : IHateoasResultProvider
 	{
-		readonly IOptions<MvcJsonOptions> _jsonOptions;
+		readonly JsonSerializerOptions _jsonOptions;
 		readonly IHateoasUriProvider _uriProvider;
 
 		public HateoasResultProvider(
-			IOptions<MvcJsonOptions> jsonOptions,
-			IHateoasUriProvider uriProvider)
+			IHateoasUriProvider uriProvider,
+			JsonSerializerOptions jsonOptions = null)
 		{
-			_jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));
 			_uriProvider = uriProvider ?? throw new ArgumentNullException(nameof(uriProvider));
+			_jsonOptions = jsonOptions ?? new JsonSerializerOptions
+			{
+				IgnoreNullValues = true
+			};
 		}
 
 		public IList<object> Links { get; } = new List<object>();
@@ -45,17 +46,13 @@ namespace Sciensoft.Hateoas.Providers
 
 		public async Task<IActionResult> GetContentResultAsync(string rawPayload)
 		{
-			var json = JObject.Parse(rawPayload);
-			json.Add("links", JToken.FromObject(Links, new JsonSerializer
-			{
-				ContractResolver = _jsonOptions.Value.SerializerSettings.ContractResolver,
-				NullValueHandling = _jsonOptions.Value.SerializerSettings.NullValueHandling
-			}));
+			var finalPayload = JsonSerializer.Deserialize<Dictionary<string, object>>(rawPayload, _jsonOptions);
+			finalPayload.Add("links", Links); // TODO : Remove null items
 
-			var content = new JsonResult(json, _jsonOptions.Value.SerializerSettings)
+			var content = new JsonResult(finalPayload)
 			{
 				// TODO : Add support to Content Negotiation Content-Type
-				ContentType = "application/hateoas+json"
+				//ContentType = "application/hateoas+json"
 			};
 
 			return await Task.FromResult(content).ConfigureAwait(false);
