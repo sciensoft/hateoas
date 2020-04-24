@@ -18,7 +18,7 @@ namespace Sciensoft.Hateoas.Extensions
 			services.AddSingleton<IRouteCollection, RouteCollection>();
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-			services.AddTransient<IHateoasUriProvider, HateoasUriProvider>();
+			services.AddTransient<HateoasProxyUriProvider, HateoasProxyUriProvider>();
 			services.AddTransient<IHateoasResultProvider, HateoasResultProvider>();
 
 			services

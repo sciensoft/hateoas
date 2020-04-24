@@ -11,7 +11,7 @@ namespace Sciensoft.Hateoas.Repository
 
 		public abstract class Policy
 		{
-			public Policy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
+			protected Policy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
 			{
 				if (string.IsNullOrWhiteSpace(name))
 				{

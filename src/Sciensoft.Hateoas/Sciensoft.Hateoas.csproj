@@ -28,12 +28,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.2.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
 
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
-		<PackageReference Include="System.Text.Json" Version="4.7.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Abstractions\" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.3" />
+		<PackageReference Include="System.Text.Json" Version="4.7.1" />
 	</ItemGroup>
 
 </Project>

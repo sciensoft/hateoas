@@ -18,7 +18,18 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 			{
 				Id = Guid.NewGuid(),
 				Name = "Hello Sample View",
-				Samples = new[] { "A", "B", "C" }
+				Tags = new[] { "A", "B", "C" }
+			});
+		}
+
+		[HttpGet("{id:guid}")]
+		public ActionResult<SampleViewModel> Get(Guid id)
+		{
+			return Ok(new SampleViewModel
+			{
+				Id = Guid.NewGuid(),
+				Name = "Hello Sample View",
+				Tags = new[] { "A", "B", "C" }
 			});
 		}
 
@@ -29,7 +40,7 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 			{
 				Id = id,
 				Name = "Hello Sample View",
-				Samples = new[] { "A", "B", "C" }
+				Tags = new[] { "A", "B", "C" }
 			});
 		}
 	}

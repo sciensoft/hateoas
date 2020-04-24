@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using Sciensoft.Hateoas.WebSample.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Sciensoft.Hateoas.Tdd
@@ -15,19 +15,20 @@ namespace Sciensoft.Hateoas.Tdd
 		[Fact]
 		public void OngoingTestLab()
 		{
-			try
-			{
-				Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
+			// Arrange
+			Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
 
-				var parameter = expression.Parameters[0];
-				var body = expression.Body as MethodCallExpression;
+			var parameter = expression.Parameters[0];
+			var body = expression.Body as MethodCallExpression;
 
-				var argumentType = typeof(ResourceModel);
-				var argumentAtRuntime = Activator.CreateInstance(argumentType);
+			var argumentType = typeof(ResourceModel);
+			var argumentAtRuntime = Activator.CreateInstance(argumentType);
 
-				var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argumentAtRuntime);
-			}
-			catch (Exception ex) { }
+			// Act
+			var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argumentAtRuntime);
+
+			// Assert
+			results.Should().BeNull();
 		}
 
 		[Theory]
@@ -171,7 +172,7 @@ namespace Sciensoft.Hateoas.Tdd
 			var arguments = (expression.Body as MethodCallExpression).Arguments;
 
 			// TODO : Create method to extract ConstantExpression Value -> "/api/numbers/{0}"
-			string constReturn = (arguments.Where(a => a is ConstantExpression).FirstOrDefault() as ConstantExpression).Value.ToString();
+			string constReturn = (arguments.FirstOrDefault(a => a is ConstantExpression) as ConstantExpression).Value.ToString();
 
 			var operandValues = new List<string>();
 			foreach (UnaryExpression args in arguments.Where(a => a is UnaryExpression))

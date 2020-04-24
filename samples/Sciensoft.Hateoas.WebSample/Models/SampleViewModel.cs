@@ -9,8 +9,8 @@ namespace Sciensoft.Hateoas.WebSample.Models
 
 		public string Name { get; set; }
 
-		public ICollection<object> Samples { get; set; }
+		public ICollection<object> Tags { get; set; }
 
-		public object Null { get; set; }
+		public object Reference { get; set; }
 	}
 }

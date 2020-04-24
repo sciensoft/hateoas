@@ -9,11 +9,11 @@ namespace Sciensoft.Hateoas.Providers
 {
 	internal class HateoasResultProvider : IHateoasResultProvider
 	{
-		readonly JsonSerializerOptions _jsonOptions;
-		readonly IHateoasUriProvider _uriProvider;
+		private readonly JsonSerializerOptions _jsonOptions;
+		private readonly HateoasProxyUriProvider _uriProvider;
 
 		public HateoasResultProvider(
-			IHateoasUriProvider uriProvider,
+			HateoasProxyUriProvider uriProvider,
 			JsonSerializerOptions jsonOptions = null)
 		{
 			_uriProvider = uriProvider ?? throw new ArgumentNullException(nameof(uriProvider));
@@ -36,12 +36,16 @@ namespace Sciensoft.Hateoas.Providers
 			 * }
             */
 
-			await Task.Run(() => Links.Add(new
+			var endpoint = _uriProvider.GenerateEndpoint(policy, result);
+
+			Links.Add(new
 			{
-				policy.Method,
-				Uri = _uriProvider.GenerateUri(policy, result),
+				endpoint.Method,
+				endpoint.Uri,
 				Relation = policy.Name,
-			})).ConfigureAwait(false);
+			});
+
+			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
 		public async Task<IActionResult> GetContentResultAsync(string rawPayload)

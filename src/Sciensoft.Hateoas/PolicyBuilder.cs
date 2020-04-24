@@ -54,6 +54,19 @@ namespace Sciensoft.Hateoas
 		}
 
 		/// <summary>
+		/// Adds query based URI to the resource representation.
+		/// </summary>
+		/// <param name="expression"></param>
+		/// <param name="parameterName"></param>
+		/// <param name="method"></param>
+		/// <param name="message"></param>
+		/// <returns></returns>
+		public PolicyBuilder<T> AddQuery(Expression<Func<T, object>> expression, string parameterName, string method = null, string message = null)
+		{
+			throw new NotImplementedException("Feature not implemented yet.");
+		}
+
+		/// <summary>
 		/// Adds custom defined URI to the resource representation, e.g., would be pointing to an external URI.
 		/// </summary>
 		/// <param name="expression">Path expression, e.g. @"https://my-external-uri.com/api/resource/{@id}"</param>

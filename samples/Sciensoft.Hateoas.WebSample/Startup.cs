@@ -18,10 +18,7 @@ namespace Sciensoft.Hateoas.WebSample
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services
-				.AddMvc(options =>
-				{
-					options.EnableEndpointRouting = false;
-				})
+				.AddControllers()
 				.AddLinks(policy =>
 				{
 					policy
@@ -50,7 +47,10 @@ namespace Sciensoft.Hateoas.WebSample
 				appBuilder.UseDeveloperExceptionPage();
 			}
 
-			appBuilder.UseMvc();
+			appBuilder
+				.UseRouting()
+				//.UseAuthorization()
+				.UseEndpoints(builder => builder.MapControllers());
 		}
 	}
 }
