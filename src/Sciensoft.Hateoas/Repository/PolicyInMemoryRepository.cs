@@ -35,6 +35,15 @@ namespace Sciensoft.Hateoas.Repository
 			public string Method { get; set; }
 		}
 
+		public class SelfPolicy : Policy
+		{
+			public SelfPolicy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
+				: base(type, expression, name, memberName)
+			{ }
+
+			public string Template { get; set; } = "/";
+		}
+
 		public class TemplatePolicy : Policy
 		{
 			public TemplatePolicy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)

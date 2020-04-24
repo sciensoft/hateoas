@@ -30,6 +30,8 @@ namespace Sciensoft.Hateoas.Providers
 			AssureIsNotNull(policy, nameof(policy));
 			AssureIsNotNull(result, nameof(result));
 
+			// TODO : Use PolicyFactory for identify Uri provider
+
 			switch (policy)
 			{
 				case PolicyInMemoryRepository.TemplatePolicy genericPolicy:
@@ -52,7 +54,7 @@ namespace Sciensoft.Hateoas.Providers
 			var path = GetFormatedPath($"{request.Path}");
 			var finalPath = GetFormatedPath($"{t}/{r}");
 
-			return (policy.Method, $"{host}/{finalPath}");
+			return (policy.Method, $"{host}/{path}/{finalPath}");
 		}
 
 		private (string Method, string Uri) GenerateEndpoint(PolicyInMemoryRepository.RoutePolicy policy, object result)
