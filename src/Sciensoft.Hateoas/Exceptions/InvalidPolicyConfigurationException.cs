@@ -2,7 +2,7 @@
 
 namespace Sciensoft.Hateoas.Exceptions
 {
-    public class InvalidPolicyConfigurationException : Exception
+    internal class InvalidPolicyConfigurationException : Exception
     {
         public InvalidPolicyConfigurationException()
             : base()

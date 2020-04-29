@@ -10,217 +10,222 @@ using Xunit;
 
 namespace Sciensoft.Hateoas.Tdd
 {
-    public class ExpressionCompilationTests
-    {
-        [Fact]
-        public void OngoingTestLab()
-        {
-            try
-            {
-                Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
+	public class ExpressionCompilationTests
+	{
+		[Fact(Skip = "Ongoing tests")]
+		public void OngoingTestLab()
+		{
+			// Arrange
+			Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
 
-                var parameter = expression.Parameters[0];
-                var body = expression.Body as MethodCallExpression;
+			var parameter = expression.Parameters[0];
+			var body = expression.Body as MethodCallExpression;
 
-                var argumentType = typeof(ResourceModel);
-                var argumentAtRuntime = Activator.CreateInstance(argumentType);
+			var argumentType = typeof(ResourceModel);
+			var argumentAtRuntime = Activator.CreateInstance(argumentType);
 
-                var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argumentAtRuntime);
-            }
-            catch (Exception ex) { }
-        }
+			// Act
+			var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argumentAtRuntime);
 
-        [Theory]
-        [InlineData(typeof(SampleViewModel), "F52813B6-346C-11E9-874F-0A27172E52BC")]
-        [InlineData(typeof(SampleViewModel), "F528191A-346C-11E9-874F-0A27172E52BC")]
-        [InlineData(typeof(SampleViewModel), "F5281D16-346C-11E9-874F-0A27172E52BC")]
-        public void MethodCallExpression_Should_CompileAndReturnResults_ForReflectedTypes(Type argumentType, string argumentIdValue)
-        {
-            // Arrange
-            Expression<Func<SampleViewModel, string>> expression = r => $"/api/resource/{r.Id}";
+			// Assert
+			results.Should().BeNull();
+		}
 
-            var parameter = expression.Parameters[0];
-            var body = expression.Body as MethodCallExpression;
+		[Theory]
+		[InlineData(typeof(BookViewModel), "F52813B6-346C-11E9-874F-0A27172E52BC")]
+		[InlineData(typeof(BookViewModel), "F528191A-346C-11E9-874F-0A27172E52BC")]
+		[InlineData(typeof(BookViewModel), "F5281D16-346C-11E9-874F-0A27172E52BC")]
+		public void MethodCallExpression_Should_CompileAndReturnResults_ForReflectedTypes(Type argumentType, string argumentIdValue)
+		{
+			// Arrange
+			Expression<Func<BookViewModel, string>> expression = r => $"/api/resource/{r.Id}";
 
-            var sourceArgument = new
-            {
-                Name = argumentIdValue,
-                Id = Guid.Parse(argumentIdValue)
-            };
-            var targetArgument = Activator.CreateInstance(argumentType);
+			var parameter = expression.Parameters[0];
+			var body = expression.Body as MethodCallExpression;
 
-            try
-            {
-                Mapper.Initialize(config =>
-                {
-                    config.CreateMissingTypeMaps = true;
-                    config.CreateMap(sourceArgument.GetType(), argumentType);
-                });
-            }
-            catch { }
+			var sourceArgument = new
+			{
+				Name = argumentIdValue,
+				Id = Guid.Parse(argumentIdValue)
+			};
 
-            Mapper.Map(sourceArgument, targetArgument);
+			var targetArgument = Activator.CreateInstance(argumentType);
 
-            // Act
-            var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(targetArgument);
+			var mapperConfig = new MapperConfiguration(config =>
+			{
+				//config.CreateMissingTypeMaps = true;
+				config.CreateMap(sourceArgument.GetType(), targetArgument.GetType());
+			});
 
-            // Assert
-            results.Should().NotBeNull();
-            results.ToString().ToLower().Should().Be($"/api/resource/{argumentIdValue.ToLower()}");
-        }
+			mapperConfig
+				.CreateMapper()
+				.Map(sourceArgument, targetArgument);
 
-        [Fact]
-        public void MethodCallExpression_Should_CompileAndReturnResult()
-        {
-            // Arrange
-            var argument = new ResourceModel();
-            Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
+			// Act
+			var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(targetArgument);
 
-            var parameter = expression.Parameters[0];
-            var body = expression.Body as MethodCallExpression;
+			// Assert
+			results.Should().NotBeNull();
+			results.ToString().ToLower().Should().Be($"/api/resource/{argumentIdValue.ToLower()}");
+		}
 
-            // Act
-            var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argument);
+		[Fact]
+		public void MethodCallExpression_Should_CompileAndReturnResult()
+		{
+			// Arrange
+			var argument = new ResourceModel();
+			Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
 
-            // Assert
-            results.Should().NotBeNull();
-            results.ToString().Should().StartWith("/api/resource/");
-        }
+			var parameter = expression.Parameters[0];
+			var body = expression.Body as MethodCallExpression;
 
-        [Fact]
-        public void ConstantExpression_Should_CompiledAndReturnResult()
-        {
-            // Arrange
-            const string value = "/api/get/{0}";
-            var constant = Expression.Constant(value, typeof(string));
+			// Act
+			var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argument);
 
-            // Act
-            var result = Expression.Lambda(constant).Compile().DynamicInvoke();
+			// Assert
+			results.Should().NotBeNull();
+			results.ToString().Should().StartWith("/api/resource/");
+		}
 
-            // Assert
-            result.Should().Be(value);
-        }
+		[Fact]
+		public void ConstantExpression_Should_CompiledAndReturnResult()
+		{
+			// Arrange
+			const string value = "/api/get/{0}";
+			var constant = Expression.Constant(value, typeof(string));
 
-        [Fact]
-        public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingZeroReturningString()
-        {
-            // Arrange
-            Expression<Func<int, string>> expression = num => $"/api/numbers/{num}";
-            var expressionAsObject = expression as Expression;
+			// Act
+			var result = Expression.Lambda(constant).Compile().DynamicInvoke();
 
-            var labdaExpression = Expression.Lambda(expressionAsObject, expression.Parameters);
-            var @delegate = labdaExpression.Compile();
+			// Assert
+			result.Should().Be(value);
+		}
 
-            var funcType = @delegate.GetType();
-            var funcInvoke = funcType.GetMethod("Invoke");
-            dynamic funcProjection = funcInvoke.Invoke(@delegate, new object[] { 0 });
+		[Fact]
+		public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingZeroReturningString()
+		{
+			// Arrange
+			Expression<Func<int, string>> expression = num => $"/api/numbers/{num}";
+			var expressionAsObject = expression as Expression;
 
-            // Act
-            var result = funcProjection(0);
+			var labdaExpression = Expression.Lambda(expressionAsObject, expression.Parameters);
+			var @delegate = labdaExpression.Compile();
 
-            // Assert
-            "/api/numbers/0".Should().Be(result);
-        }
+			var funcType = @delegate.GetType();
+			var funcInvoke = funcType.GetMethod("Invoke");
+			dynamic funcProjection = funcInvoke.Invoke(@delegate, new object[] { 0 });
 
-        [Theory]
-        [InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC")]
-        [InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC")]
-        [InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC")]
-        [InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC")]
-        public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingSampleViewModelAndReturningString(string uuid)
-        {
-            // Arrange
-            var viewModel = new SampleViewModel { Id = Guid.Parse(uuid) };
-            Expression<Func<SampleViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
-            var expressionAsObject = expression as Expression;
+			// Act
+			var result = funcProjection(0);
 
-            var labdaExpression = Expression.Lambda(expressionAsObject, expression.Parameters);
-            var @delegate = labdaExpression.Compile();
+			// Assert
+			"/api/numbers/0".Should().Be(result);
+		}
 
-            var funcType = @delegate.GetType();
-            var funcInvoke = funcType.GetMethod("Invoke");
-            dynamic funcProjection = funcInvoke.Invoke(@delegate, new object[] { viewModel });
+		[Theory]
+		[InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC")]
+		[InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC")]
+		[InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC")]
+		[InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC")]
+		public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingSampleViewModelAndReturningString(string uuid)
+		{
+			// Arrange
+			var viewModel = new BookViewModel { Id = Guid.Parse(uuid) };
+			Expression<Func<BookViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
+			var expressionAsObject = expression as Expression;
 
-            // Act
-            var result = funcProjection(viewModel);
+			var labdaExpression = Expression.Lambda(expressionAsObject, expression.Parameters);
+			var @delegate = labdaExpression.Compile();
 
-            // Assert
-            $"/api/numbers/{uuid}".ToLower().Should().Be(result.ToLower());
-        }
+			var funcType = @delegate.GetType();
+			var funcInvoke = funcType.GetMethod("Invoke");
+			dynamic funcProjection = funcInvoke.Invoke(@delegate, new object[] { viewModel });
 
-        [Theory]
-        [InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
-        [InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
-        [InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
-        [InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
-        public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingObjectAndReturningString(string uuid, Type objectType)
-        {
-            // Arrange
-            var anonymousViewModel = new { Id = Guid.Parse(uuid) };
-            var strongTypeViewModel = Activator.CreateInstance(objectType);
+			// Act
+			var result = funcProjection(viewModel);
 
-            Mapper.Initialize(config => config.ValidateInlineMaps = false);
-            var viewModel = Mapper.Map(anonymousViewModel, anonymousViewModel.GetType(), objectType);
+			// Assert
+			$"/api/numbers/{uuid}".ToLower().Should().Be(result.ToLower());
+		}
 
-            Expression<Func<SampleViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
+		[Theory]
+		[InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
+		[InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
+		[InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
+		[InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
+		public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingObjectAndReturningString(string uuid, Type objectType)
+		{
+			// Arrange
+			var anonymousViewModel = new { Id = Guid.Parse(uuid) };
+			var strongTypeViewModel = Activator.CreateInstance(objectType);
 
-            var arguments = (expression.Body as MethodCallExpression).Arguments;
+			var mapperConfig = new MapperConfiguration(config =>
+			{
+				config.CreateMap(anonymousViewModel.GetType(), objectType);
+			});
 
-            // TODO : Create method to extract ConstantExpression Value -> "/api/numbers/{0}"
-            string constReturn = (arguments.Where(a => a is ConstantExpression).FirstOrDefault() as ConstantExpression).Value.ToString();
+			var viewModel = mapperConfig.CreateMapper()
+				.Map(anonymousViewModel, strongTypeViewModel);
 
-            var operandValues = new List<string>();
-            foreach (UnaryExpression args in arguments.Where(a => a is UnaryExpression))
-            {
-                var operand = args.Operand.ToString();
-                var operandMembers = operand.Split('.');
-                var operandForBinding = operandMembers.Last();
+			Expression<Func<BookViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
 
-                operandValues.Add(JObject.FromObject(viewModel).GetValue(operandForBinding).ToString());
-            }
+			var arguments = (expression.Body as MethodCallExpression).Arguments;
 
-            // Act
-            var result = string.Format(constReturn, operandValues.ToArray());
+			// TODO : Create method to extract ConstantExpression Value -> "/api/numbers/{0}"
+			string constReturn = (arguments.FirstOrDefault(a => a is ConstantExpression) as ConstantExpression).Value.ToString();
 
-            // Assert
-            $"/api/numbers/{uuid}".ToLower().Should().Be(result.ToLower());
-        }
+			var operandValues = new List<string>();
+			foreach (UnaryExpression args in arguments.Where(a => a is UnaryExpression))
+			{
+				var operand = args.Operand.ToString();
+				var operandMembers = operand.Split('.');
+				var operandForBinding = operandMembers.Last();
 
-        [Fact]
-        public void ExpressionTree_TestOne()
-        {
-            // Arrange
-            var companies = new[]
-            {
-                "Consolidated Messenger", "Alpine Ski House", "Southridge Video", "City Power & Light", "Coho Winery", "Wide World Importers",
-                "Graphic Design Institute", "Adventure Works", "Humongous Insurance", "Woodgrove Bank", "Margie's Travel", "Northwind Traders",
-                "Blue Yonder Airlines", "Trey Research", "The Phone Company", "Wingtip Toys", "Lucerne Publishing", "Fourth Coffee"
-            }.AsQueryable();
+				operandValues.Add(JObject.FromObject(viewModel).GetValue(operandForBinding).ToString());
+			}
 
-            var expParameter = Expression.Parameter(typeof(string), "company");
-            var expArguments = Expression.Constant("ho");
-            var expContains = Expression.Call(expParameter, typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) }), new[] { expArguments });
+			// Act
+			var result = string.Format(constReturn, operandValues.ToArray());
 
-            var expContainsIsTrue = Expression.IsTrue(expContains);
+			// Assert
+			$"/api/numbers/{uuid}".ToLower().Should().Be(result.ToLower());
+		}
 
-            var isTrueCall = Expression.Call(
-                typeof(Queryable),
-                nameof(Queryable.Where),
-                new[] { companies.ElementType },
-                companies.Expression,
-                Expression.Lambda<Func<string, bool>>(expContainsIsTrue, new[] { expParameter }));
+		[Fact]
+		public void ExpressionTree_TestOne()
+		{
+			// Arrange
+			var companies = new[]
+			{
+				"Consolidated Messenger", "Alpine Ski House", "Southridge Video", "City Power & Light", "Coho Winery", "Wide World Importers",
+				"Graphic Design Institute", "Adventure Works", "Humongous Insurance", "Woodgrove Bank", "Margie's Travel", "Northwind Traders",
+				"Blue Yonder Airlines", "Trey Research", "The Phone Company", "Wingtip Toys", "Lucerne Publishing", "Fourth Coffee"
+			}.AsQueryable();
 
-            // Act
-            var results = companies.Provider.CreateQuery<string>(isTrueCall);
+			var expParameter = Expression.Parameter(typeof(string), "company");
+			var expArguments = Expression.Constant("ho");
+			var expContains = Expression.Call(expParameter, typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) }), new[] { expArguments });
 
-            // Assert
-            results.Any().Should().BeTrue();
-            results.Count().Should().BeGreaterThan(0);
-        }
+			var expContainsIsTrue = Expression.IsTrue(expContains);
 
-        public class ResourceModel
-        {
-            public Guid Id { get; set; } = Guid.NewGuid();
-        }
-    }
+			var isTrueCall = Expression.Call(
+				typeof(Queryable),
+				nameof(Queryable.Where),
+				new[] { companies.ElementType },
+				companies.Expression,
+				Expression.Lambda<Func<string, bool>>(expContainsIsTrue, new[] { expParameter }));
+
+			// Act
+			var results = companies.Provider.CreateQuery<string>(isTrueCall);
+
+			// Assert
+			results.Any().Should().BeTrue();
+			results.Count().Should().BeGreaterThan(0);
+		}
+
+		public class ResourceModel
+		{
+			public Guid Id { get; set; } = Guid.NewGuid();
+		}
+	}
 }

@@ -1,9 +1,8 @@
 ﻿using FluentAssertions;
 using Sciensoft.Hateoas.Constants;
 using Sciensoft.Hateoas.Exceptions;
-using Sciensoft.Hateoas.Repository;
+using Sciensoft.Hateoas.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -23,7 +22,7 @@ namespace Sciensoft.Hateoas.Tdd
 			policyBuilder.AddSelf(o => o);
 
 			// Assert
-			PolicyInMemoryRepository.LinksPolicyInMemory
+			InMemoryPolicyRepository.InMemoryPolicies
 				.Any(p => p.Name.Equals(PolicyConstants.Self))
 				.Should().BeTrue();
 		}
@@ -56,9 +55,9 @@ namespace Sciensoft.Hateoas.Tdd
 			policyBuilder.AddRoute(o => o, routeName);
 
 			// Assert
-			PolicyInMemoryRepository.LinksPolicyInMemory
-				.Any(p => (p as PolicyInMemoryRepository.RoutePolicy) != null
-					&& (p as PolicyInMemoryRepository.RoutePolicy).RouteName.Equals(routeName))
+			InMemoryPolicyRepository.InMemoryPolicies
+				.Any(p => (p is InMemoryPolicyRepository.RoutePolicy)
+					&& (p as InMemoryPolicyRepository.RoutePolicy).RouteName.Equals(routeName))
 				.Should().BeTrue();
 		}
 
@@ -84,16 +83,14 @@ namespace Sciensoft.Hateoas.Tdd
 		{
 			// Arrange
 			string linkKey = "CustomLink";
-			string template = "/api/custom";
 			var policyBuilder = new PolicyBuilder<object>();
 
 			// Act
-			policyBuilder.AddCustom(o => o, linkKey, template);
+			policyBuilder.AddCustomPath(o => o, linkKey);
 
 			// Assert
-			PolicyInMemoryRepository.LinksPolicyInMemory
-				.Any(p => (p as PolicyInMemoryRepository.TemplatePolicy) != null
-					&& (p as PolicyInMemoryRepository.TemplatePolicy).Template.Equals(template))
+			InMemoryPolicyRepository.InMemoryPolicies
+				.Any(p => p is InMemoryPolicyRepository.CustomPolicy)
 				.Should().BeTrue();
 		}
 
@@ -104,7 +101,7 @@ namespace Sciensoft.Hateoas.Tdd
 			var policyBuilder = new PolicyBuilder<object>();
 
 			// Act
-			Action act = () => policyBuilder.AddCustom(o => o, null);
+			Action act = () => policyBuilder.AddCustomPath(o => o, null);
 
 			// Assert
 			act.Should().Throw<InvalidPolicyConfigurationException>();

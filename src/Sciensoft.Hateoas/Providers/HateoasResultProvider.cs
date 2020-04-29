@@ -1,61 +1,64 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Sciensoft.Hateoas.Repository;
+using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.Providers
 {
 	internal class HateoasResultProvider : IHateoasResultProvider
 	{
-		readonly IOptions<MvcJsonOptions> _jsonOptions;
-		readonly IHateoasUriProvider _uriProvider;
+		private readonly IServiceProvider _serviceProvider;
+		private readonly JsonSerializerOptions _jsonOptions;
 
 		public HateoasResultProvider(
-			IOptions<MvcJsonOptions> jsonOptions,
-			IHateoasUriProvider uriProvider)
+			IServiceProvider serviceProvider,
+			JsonSerializerOptions jsonOptions = null)
 		{
-			_jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));
-			_uriProvider = uriProvider ?? throw new ArgumentNullException(nameof(uriProvider));
+			_serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+			_jsonOptions = jsonOptions ?? new JsonSerializerOptions
+			{
+				IgnoreNullValues = true
+			};
 		}
 
 		public IList<object> Links { get; } = new List<object>();
 
-		public async Task AddPolicyAsync(PolicyInMemoryRepository.Policy policy, object result)
+		public async Task AddPolicyResultAsync(InMemoryPolicyRepository.Policy policy, object result)
 		{
-			/* TODO : Links should be composed of
-			 * 
-			 * {
-			 *   "method": "GET|PUT|POST|DELETE|HEAD|OPTION|...",
-			 *   "uri": "http://127.0.0.1:8080/api/sample/20",
-			 *   "relation": "self|new|update|delete|custom_{name}",
-			 * }
-            */
+			var uriProviderType = typeof(HateoasUriProvider<>).MakeGenericType(policy.GetType());
+			var uriProvider = _serviceProvider.GetService(uriProviderType);
 
-			await Task.Run(() => Links.Add(new
+			var endpoint = (dynamic)uriProvider.GetType()
+				.InvokeMember(
+					nameof(HateoasUriProvider<InMemoryPolicyRepository.Policy>.GenerateEndpoint),
+					BindingFlags.InvokeMethod,
+					null,
+					uriProvider,
+					new[] { policy, result });
+
+			Links.Add(new
 			{
-				policy.Method,
-				Uri = _uriProvider.GenerateUri(policy, result),
+				Method = endpoint.Item1,
+				Uri = endpoint.Item2,
 				Relation = policy.Name,
-			})).ConfigureAwait(false);
+			});
+
+			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
 		public async Task<IActionResult> GetContentResultAsync(string rawPayload)
 		{
-			var json = JObject.Parse(rawPayload);
-			json.Add("links", JToken.FromObject(Links, new JsonSerializer
-			{
-				ContractResolver = _jsonOptions.Value.SerializerSettings.ContractResolver,
-				NullValueHandling = _jsonOptions.Value.SerializerSettings.NullValueHandling
-			}));
+			var finalPayload = JsonSerializer.Deserialize<Dictionary<string, object>>(rawPayload, _jsonOptions);
+			finalPayload.Add("links", Links);
 
-			var content = new JsonResult(json, _jsonOptions.Value.SerializerSettings)
+			var content = new JsonResult(finalPayload)
 			{
 				// TODO : Add support to Content Negotiation Content-Type
-				ContentType = "application/hateoas+json"
+				//ContentType = "application/hateoas+json"
 			};
 
 			return await Task.FromResult(content).ConfigureAwait(false);
@@ -64,7 +67,7 @@ namespace Sciensoft.Hateoas.Providers
 
 	internal interface IHateoasResultProvider
 	{
-		Task AddPolicyAsync(PolicyInMemoryRepository.Policy policy, object result);
+		Task AddPolicyResultAsync(InMemoryPolicyRepository.Policy policy, object result);
 
 		Task<IActionResult> GetContentResultAsync(string rawPayload);
 	}

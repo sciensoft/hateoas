@@ -1,16 +1,31 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using System.IO;
+using Microsoft.Extensions.Hosting;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.WebSample
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-            => new WebHostBuilder()
-                    .UseKestrel()
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<Startup>()
-                    .Build()
-                    .Run();
-    }
+	static class Program
+	{
+		static async Task Main(string[] args)
+		{
+			if (args.Any(a => a.Equals("--debug")))
+				Debugger.Launch();
+
+			await CreateHostBuilder(args).Build().RunAsync();
+		}
+
+		static IHostBuilder CreateHostBuilder(string[] args) =>
+			Host.CreateDefaultBuilder(args)
+				.ConfigureWebHostDefaults(webBuilder =>
+				{
+					webBuilder.ConfigureKestrel(options =>
+					{
+						options.Listen(IPAddress.Any, 6001);
+					});
+					webBuilder.UseStartup<Startup>();
+				});
+	}
 }
