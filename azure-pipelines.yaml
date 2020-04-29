@@ -34,7 +34,7 @@ steps:
     condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/*', 'refs/heads/master'))
     inputs:
       versionSpec: '5.x'
-      updateAssemblyInfo: true
+      updateAssemblyInfo: false
 
   - task: DotNetCoreCLI@2
     displayName: '📦 Pack'
