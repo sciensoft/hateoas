@@ -21,18 +21,17 @@ steps:
       projects: 'src/**/Sciensoft.Hateoas.csproj'
       verbosityRestore: Minimal
 
-  - task: DotNetCoreCLI@2
-    displayName: '🧪 Test'
-    inputs:
-      command: test
-
   - task: Bash@3
-    displayName: '🧪 Tests and 🔬 Code Coverage'
+    displayName: '🧪 Tests & 🔬 Code Coverage'
     # condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/release/*', 'refs/heads/master'))
     inputs:
       targetType: 'inline'
       script: dotnet test tests/**/*.Tdd.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[Sciensoft.Hateoas.WebSample]*"
-    
+  
+  - task: gittools.usegitversion.gitversion-task.UseGitVersion@5
+    displayName: 'Semantic Versioning'
+    condition: succeeded()
+
   - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
     displayName: 'Prepare analysis on SonarCloud'
     enabled: false
@@ -41,7 +40,7 @@ steps:
       organization: 'Sciensoft.Hateoas (sciensoft-hateoas)'
       projectKey: $(projectKey)
       projectName: Sciensoft.AspNetCore
-  
+
   - task: DotNetCoreCLI@2
     displayName: '📦 Pack'
     inputs:
@@ -49,8 +48,9 @@ steps:
       packagesToPack: 'src/**/Sciensoft.Hateoas.csproj'
       includesymbols: true
       includesource: true
-      verbosityPack: Diagnostic
-  
+      verbosityPack: Normal
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/release/*', 'refs/heads/master'))
+
   - task: PublishTestResults@2
     enabled: false
     displayName: '🧪 Publish Test Results'
