@@ -1,68 +1,42 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Routing;
-using Sciensoft.Hateoas.Repository;
+using Microsoft.Extensions.DependencyInjection;
+using Sciensoft.Hateoas.Repositories;
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Sciensoft.Hateoas.Providers
 {
-	internal class HateoasUriProvider : IHateoasUriProvider
+	internal abstract class HateoasUriProvider<TPolicy>
+		where TPolicy : InMemoryPolicyRepository.Policy
 	{
-		readonly IHttpContextAccessor _contextAccessor;
+		protected readonly IHttpContextAccessor ContextAccessor;
+		protected readonly LinkGenerator LinkGenerator;
 
-		public HateoasUriProvider(IHttpContextAccessor contextAccessor)
-			=> _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
-
-		public string GenerateUri(PolicyInMemoryRepository.Policy policy, object result)
+		protected HateoasUriProvider(IHttpContextAccessor contextAccessor, LinkGenerator linkGenerator)
 		{
-			AssureIsNotNull(policy, nameof(policy));
-			AssureIsNotNull(result, nameof(result));
+			ContextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+			LinkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+		}
 
-			switch (policy)
+		protected HttpContext HttpContext => ContextAccessor.HttpContext;
+
+		protected object EndpointDataSource => HttpContext.RequestServices.GetRequiredService<EndpointDataSource>();
+
+		protected string Host
+		{
+			get
 			{
-				case PolicyInMemoryRepository.TemplatePolicy genericPolicy:
-					return GenerateUri(genericPolicy, result);
-				case PolicyInMemoryRepository.RoutePolicy routePolicy:
-					return GenerateUri(routePolicy, result);
-				default:
-					return null;
+				var context = ContextAccessor.HttpContext;
+				var request = context.Request;
+
+				return GetFormatedPath($"{request.Scheme}://{request.Host}");
 			}
 		}
 
-		private string GenerateUri(PolicyInMemoryRepository.TemplatePolicy policy, object result)
-		{
-			string t = GetFormatedPath(policy.Template);
-			string r = GetFormatedPath(result.ToString());
+		public abstract (string Method, string Uri) GenerateEndpoint(TPolicy policy, object result);
 
-			var request = _contextAccessor.HttpContext.Request;
-			var host = GetFormatedPath($"{request.Scheme}://{request.Host}");
-			var path = GetFormatedPath($"{request.Path}");
-			var finalPath = GetFormatedPath($"{t}/{r}");
-
-			return $"{host}/{path}/{finalPath}";
-		}
-
-		private string GenerateUri(PolicyInMemoryRepository.RoutePolicy policy, object result)
-		{
-			var context = _contextAccessor.HttpContext;
-
-			// Other types -> RouteCollection, AttributeRoute
-			var mvcAttributeRouteHandler = context.GetRouteData().Routers.OfType<MvcAttributeRouteHandler>().First();
-
-			var mvcActions = mvcAttributeRouteHandler.Actions;
-			var routeInfo = mvcActions.FirstOrDefault(a => a.AttributeRouteInfo.Name != null && a.AttributeRouteInfo.Name.Equals(policy.RouteName)).AttributeRouteInfo;
-
-			var request = _contextAccessor.HttpContext.Request;
-			var host = GetFormatedPath($"{request.Scheme}://{request.Host}");
-			var path = GetFormatedPath($"{request.Path}");
-			var finalPath = GetFormatedPath($"{routeInfo.Template}/{result}");
-
-			return $"{host}/{path}/{finalPath}";
-		}
-
-		private string GetFormatedPath(string path)
+		protected string GetFormatedPath(string path)
 		{
 			if (path == null)
 			{
@@ -84,17 +58,12 @@ namespace Sciensoft.Hateoas.Providers
 			return path.ToLower();
 		}
 
-		private void AssureIsNotNull(object @object, string name)
+		protected void AssureIsNotNull(object @object, string name)
 		{
 			if (@object == null)
 			{
-				throw new ArgumentNullException(nameof(name));
+				throw new ArgumentNullException(name);
 			}
 		}
-	}
-
-	internal interface IHateoasUriProvider
-	{
-		string GenerateUri(PolicyInMemoryRepository.Policy policy, object result);
 	}
 }

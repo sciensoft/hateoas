@@ -3,7 +3,7 @@
 namespace Sciensoft.Hateoas.WebSample.Controllers
 {
 	[Route("api/samples/inline/resource")]
-	public class NoSampleController : Controller
+	public class NoSampleController : ControllerBase
 	{
 		[HttpGet]
 		public IActionResult Get()

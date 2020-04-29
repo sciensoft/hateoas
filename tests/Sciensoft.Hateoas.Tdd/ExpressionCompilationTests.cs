@@ -1,43 +1,44 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using AutoMapper;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using Sciensoft.Hateoas.WebSample.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Sciensoft.Hateoas.Tdd
 {
 	public class ExpressionCompilationTests
 	{
-		[Fact]
+		[Fact(Skip = "Ongoing tests")]
 		public void OngoingTestLab()
 		{
-			try
-			{
-				Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
+			// Arrange
+			Expression<Func<ResourceModel, string>> expression = r => $"/api/resource/{r.Id}";
 
-				var parameter = expression.Parameters[0];
-				var body = expression.Body as MethodCallExpression;
+			var parameter = expression.Parameters[0];
+			var body = expression.Body as MethodCallExpression;
 
-				var argumentType = typeof(ResourceModel);
-				var argumentAtRuntime = Activator.CreateInstance(argumentType);
+			var argumentType = typeof(ResourceModel);
+			var argumentAtRuntime = Activator.CreateInstance(argumentType);
 
-				var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argumentAtRuntime);
-			}
-			catch (Exception ex) { }
+			// Act
+			var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(argumentAtRuntime);
+
+			// Assert
+			results.Should().BeNull();
 		}
 
 		[Theory]
-		[InlineData(typeof(SampleViewModel), "F52813B6-346C-11E9-874F-0A27172E52BC")]
-		[InlineData(typeof(SampleViewModel), "F528191A-346C-11E9-874F-0A27172E52BC")]
-		[InlineData(typeof(SampleViewModel), "F5281D16-346C-11E9-874F-0A27172E52BC")]
+		[InlineData(typeof(BookViewModel), "F52813B6-346C-11E9-874F-0A27172E52BC")]
+		[InlineData(typeof(BookViewModel), "F528191A-346C-11E9-874F-0A27172E52BC")]
+		[InlineData(typeof(BookViewModel), "F5281D16-346C-11E9-874F-0A27172E52BC")]
 		public void MethodCallExpression_Should_CompileAndReturnResults_ForReflectedTypes(Type argumentType, string argumentIdValue)
 		{
 			// Arrange
-			Expression<Func<SampleViewModel, string>> expression = r => $"/api/resource/{r.Id}";
+			Expression<Func<BookViewModel, string>> expression = r => $"/api/resource/{r.Id}";
 
 			var parameter = expression.Parameters[0];
 			var body = expression.Body as MethodCallExpression;
@@ -129,8 +130,8 @@ namespace Sciensoft.Hateoas.Tdd
 		public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingSampleViewModelAndReturningString(string uuid)
 		{
 			// Arrange
-			var viewModel = new SampleViewModel { Id = Guid.Parse(uuid) };
-			Expression<Func<SampleViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
+			var viewModel = new BookViewModel { Id = Guid.Parse(uuid) };
+			Expression<Func<BookViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
 			var expressionAsObject = expression as Expression;
 
 			var labdaExpression = Expression.Lambda(expressionAsObject, expression.Parameters);
@@ -148,10 +149,10 @@ namespace Sciensoft.Hateoas.Tdd
 		}
 
 		[Theory]
-		[InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
-		[InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
-		[InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
-		[InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC", typeof(SampleViewModel))]
+		[InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
+		[InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
+		[InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
+		[InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
 		public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingObjectAndReturningString(string uuid, Type objectType)
 		{
 			// Arrange
@@ -166,12 +167,12 @@ namespace Sciensoft.Hateoas.Tdd
 			var viewModel = mapperConfig.CreateMapper()
 				.Map(anonymousViewModel, strongTypeViewModel);
 
-			Expression<Func<SampleViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
+			Expression<Func<BookViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
 
 			var arguments = (expression.Body as MethodCallExpression).Arguments;
 
 			// TODO : Create method to extract ConstantExpression Value -> "/api/numbers/{0}"
-			string constReturn = (arguments.Where(a => a is ConstantExpression).FirstOrDefault() as ConstantExpression).Value.ToString();
+			string constReturn = (arguments.FirstOrDefault(a => a is ConstantExpression) as ConstantExpression).Value.ToString();
 
 			var operandValues = new List<string>();
 			foreach (UnaryExpression args in arguments.Where(a => a is UnaryExpression))

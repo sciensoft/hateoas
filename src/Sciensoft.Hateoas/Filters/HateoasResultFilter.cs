@@ -1,29 +1,32 @@
-﻿using System;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
+using Sciensoft.Hateoas.Providers;
+using Sciensoft.Hateoas.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
 using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Sciensoft.Hateoas.Providers;
-using Sciensoft.Hateoas.Repository;
 
 namespace Sciensoft.Hateoas.Filters
 {
 	internal class HateoasResultFilter : ResultFilterAttribute
 	{
-		readonly IOptions<MvcJsonOptions> _jsonOptions;
-		readonly IHateoasResultProvider _resultProvider;
-		
+		private readonly ILogger<HateoasResultFilter> _logger;
+		private readonly IHateoasResultProvider _resultProvider;
+		private readonly JsonSerializerOptions _jsonOptions;
+
 		public HateoasResultFilter(
-			IOptions<MvcJsonOptions> jsonOptions,
-			IHateoasResultProvider resultProvider)
+			ILogger<HateoasResultFilter> logger,
+			IHateoasResultProvider resultProvider,
+			JsonSerializerOptions jsonOptions = null)
 		{
-			_jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 			_resultProvider = resultProvider ?? throw new ArgumentNullException(nameof(resultProvider));
+			_jsonOptions = jsonOptions;
 		}
 
 		public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -32,21 +35,17 @@ namespace Sciensoft.Hateoas.Filters
 			{
 				if (context.Result is ObjectResult result)
 				{
-					var policies = GetFilteredPolicies(PolicyInMemoryRepository.LinksPolicyInMemory, result);
+					var policies = GetFilteredPolicies(InMemoryPolicyRepository.InMemoryPolicies, result);
 
-					if (policies.Any())
+					var resultType = result.Value.GetType();
+					if (policies.Any() && !(typeof(IEnumerable<object>)).IsAssignableFrom(resultType))
 					{
-						var rawJson = JsonConvert.SerializeObject(result.Value, _jsonOptions.Value.SerializerSettings);
+						var rawJson = JsonSerializer.Serialize(result.Value, _jsonOptions);
 
-						foreach (var policy in policies)
+						foreach (var policy in policies.Where(p => p != null))
 						{
-							if (policy != null)
-							{
-								var payload = JsonConvert.DeserializeObject(rawJson, policy.Type);
-								var lambdaResult = GetLambdaResult(policy.Expression, payload, policy.Type);
-
-								await _resultProvider.AddPolicyAsync(policy, lambdaResult).ConfigureAwait(false);
-							}
+							var lambdaResult = GetLambdaResult(policy.Expression, result.Value, policy.Type);
+							await _resultProvider.AddPolicyResultAsync(policy, lambdaResult).ConfigureAwait(false);
 						}
 
 						context.Result = await _resultProvider.GetContentResultAsync(rawJson).ConfigureAwait(false);
@@ -55,8 +54,7 @@ namespace Sciensoft.Hateoas.Filters
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex);
-				// TODO : Log exception
+				_logger.LogWarning(ex, "Something went wrong while processing the link generation.");
 			}
 
 			await base.OnResultExecutionAsync(context, next).ConfigureAwait(false);
@@ -65,6 +63,9 @@ namespace Sciensoft.Hateoas.Filters
 		private object GetLambdaResult(Expression expression, object sourcePayload, Type targetPayloadType)
 		{
 			var lambdaExpression = (expression as LambdaExpression);
+
+			if (lambdaExpression == null)
+				return null;
 
 			var parameter = lambdaExpression.Parameters[0];
 			var body = lambdaExpression.Body;
@@ -84,7 +85,7 @@ namespace Sciensoft.Hateoas.Filters
 			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(targetPayload);
 		}
 
-		private IList<PolicyInMemoryRepository.Policy> GetFilteredPolicies(IList<PolicyInMemoryRepository.Policy> policies, ObjectResult result)
+		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(IList<InMemoryPolicyRepository.Policy> policies, ObjectResult result)
 			=> policies.Where(p => p.Type == result.DeclaredType || p.Type == result.Value.GetType()).ToList();
 	}
 }

@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
-namespace Sciensoft.Hateoas.Repository
+namespace Sciensoft.Hateoas.Repositories
 {
-	internal sealed class PolicyInMemoryRepository
+	internal sealed class InMemoryPolicyRepository
 	{
-		public static IList<Policy> LinksPolicyInMemory { get; } = new List<Policy>();
+		public static IList<Policy> InMemoryPolicies { get; } = new List<Policy>();
 
 		public abstract class Policy
 		{
-			public Policy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
+			protected Policy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
 			{
 				if (string.IsNullOrWhiteSpace(name))
 				{
@@ -35,13 +35,20 @@ namespace Sciensoft.Hateoas.Repository
 			public string Method { get; set; }
 		}
 
-		public class TemplatePolicy : Policy
+		public class SelfPolicy : Policy
 		{
-			public TemplatePolicy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
+			public SelfPolicy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
 				: base(type, expression, name, memberName)
 			{ }
 
 			public string Template { get; set; } = "/";
+		}
+
+		public class CustomPolicy : Policy
+		{
+			public CustomPolicy(Type type, Expression expression, string name = null, [CallerMemberName] string memberName = null)
+				: base(type, expression, name, memberName)
+			{ }
 		}
 
 		public class RoutePolicy : Policy
