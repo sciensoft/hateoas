@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<ProjectGuid>{575C4CF2-AC92-4A9C-AFB9-85329FA0AC35}</ProjectGuid>
 		<AssemblyName>Sciensoft.Hateoas</AssemblyName>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<Description>

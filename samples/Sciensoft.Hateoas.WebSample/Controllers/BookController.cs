@@ -16,8 +16,6 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 		[HttpGet]
 		public ActionResult<IEnumerable<BookViewModel>> Get()
 		{
-			string location = Url.Action(nameof(Get), new { id = Guid.NewGuid() });
-
 			return Ok(InMemoryBookRepository.Books);
 		}
 

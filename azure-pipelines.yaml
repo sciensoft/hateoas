@@ -4,7 +4,6 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   environment: development
-  projectKey: ''
   GitVersion.SemVer: ''
 
 trigger:
@@ -15,51 +14,73 @@ trigger:
       - master
 
 steps:
-  - task: DotNetCoreCLI@2
+  - task: Bash@3
     displayName: '♻️ Restore'
     inputs:
-      command: restore
-      projects: 'src/**/Sciensoft.Hateoas.csproj'
-      verbosityRestore: Minimal
+      targetType: 'inline'
+      script: dotnet restore src/**/Sciensoft.Hateoas.csproj --no-cache --verbosity minimal
+
+  - task: Bash@3
+    displayName: 'Install Sonar Scanner Tool'
+    continueOnError: true
+    inputs:
+      targetType: 'inline'
+      script: dotnet tool install dotnet-sonarscanner --tool-path $HOME/.dotnet/tools
+
+  - task: Bash@3
+    displayName: 'Prepare Analysis on SonarCloud'
+    inputs:
+      targetType: 'inline'
+      script: $HOME/.dotnet/tools/dotnet-sonarscanner begin 
+        /k:$(sonar.sciensoft.project.key) 
+        /o:$(sonar.sciensoft.organization.key) 
+        /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/tests/**/coverage.*.xml" 
+        /d:sonar.host.url=https://sonarcloud.io 
+        /d:sonar.login=$(sonar.token)
+  
+  - task: Bash@3
+    displayName: '🔧 Build'
+    inputs:
+      targetType: 'inline'
+      script: dotnet build *.sln
 
   - task: Bash@3
     displayName: '🧪 Tests & 🔬 Code Coverage'
-    # condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/*', 'refs/heads/master'))
     inputs:
       targetType: 'inline'
-      script: dotnet test tests/**/*.Tdd.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[Sciensoft.Hateoas.WebSample]*"
-  
+      script: dotnet test tests/**/*.Tdd.csproj --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[Sciensoft.Hateoas.WebSample]*"
+
   - task: UseGitVersion@5
     displayName: 'Semantic Versioning'
-    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/*', 'refs/heads/master'))
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/', 'refs/heads/master'))
     inputs:
       versionSpec: '5.x'
       updateAssemblyInfo: false
 
-  - task: DotNetCoreCLI@2
-    displayName: '📦 Pack'
-    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/*', 'refs/heads/master'))
-    inputs:
-      command: pack
-      packagesToPack: 'src/**/Sciensoft.Hateoas.csproj'
-      arguments: '/p:PackageVersion=$(GitVersion.SemVer)'
-      includesymbols: true
-      includesource: true
-      verbosityPack: Normal
-
-  - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
-    displayName: 'Prepare analysis on SonarCloud'
+  - task: Bash@3
+    displayName: '💻 Echo'
     enabled: false
     inputs:
-      SonarCloud: sonarcloud.io
-      organization: 'Sciensoft.Hateoas (sciensoft-hateoas)'
-      projectKey: $(projectKey)
-      projectName: Sciensoft.AspNetCore
-    
+      targetType: 'inline'
+      script: echo $(GitVersion.SemVer) && echo $(sonar.sciensoft.project.key)
+
+  - task: Bash@3
+    displayName: '📦 Pack'
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/', 'refs/heads/master'))
+    inputs:
+      targetType: 'inline'
+      script: dotnet pack src/**/Sciensoft.Hateoas.csproj --include-symbols --include-source /p:PackageVersion=$(GitVersion.SemVer) --verbosity normal
+
+  - task: Bash@3
+    displayName: 'Publish SonarCloud Quality Gate Results'
+    inputs:
+      targetType: 'inline'
+      script: $HOME/.dotnet/tools/dotnet-sonarscanner end /d:sonar.login=$(sonar.token)
+
   - task: PublishTestResults@2
     enabled: false
     displayName: '🧪 Publish Test Results'
     inputs:
       testResultsFormat: 'VSTest'
-      testResultsFiles: '.scripts/*.trx'
+      testResultsFiles: 'tests/**/*.trx'
       failTaskOnFailedTests: true

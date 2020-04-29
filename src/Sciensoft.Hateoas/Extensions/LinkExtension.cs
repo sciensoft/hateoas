@@ -35,8 +35,8 @@ namespace Sciensoft.Hateoas.Extensions
 			services
 				.AddMvcCore(setup =>
 				{
-					setup.Filters.Add<LocationUriResultFilter>();
-					setup.Filters.Add<HateoasResultFilter>();
+					setup.Filters.Add<LocationUriResultFilterAttribute>();
+					setup.Filters.Add<HateoasResultFilterAttribute>();
 				});
 
 			//.AddJsonOptions(options =>
