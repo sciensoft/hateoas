@@ -26,7 +26,7 @@ namespace Sciensoft.Hateoas.WebSample
 						{
 							model
 								.AddSelf(m => m.Id, "This is a GET self link.")
-								.AddRoute(m => m.Id, BookController.PostWithId)
+								.AddRoute(m => m.Id, BookController.UpdateWithId)
 								.AddRoute(m => m.Id, BookController.DeleteWithId)
 								.AddCustomPath(m => m.Id, "Edit", method: HttpMethods.Post, message: "Edits resource")
 								.AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.");
