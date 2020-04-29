@@ -1,18 +1,37 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Sciensoft.Hateoas.Repository;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Text.RegularExpressions;
 
-namespace Sciensoft.Hateoas.Abstractions
+namespace Sciensoft.Hateoas.Providers
 {
 	internal abstract class HateoasUriProvider<TPolicy>
-		where TPolicy : PolicyInMemoryRepository.Policy
+		where TPolicy : InMemoryPolicyRepository.Policy
 	{
 		protected readonly IHttpContextAccessor ContextAccessor;
+		protected readonly LinkGenerator LinkGenerator;
 
-		protected HateoasUriProvider(IHttpContextAccessor contextAccessor)
+		protected HateoasUriProvider(IHttpContextAccessor contextAccessor, LinkGenerator linkGenerator)
 		{
 			ContextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+			LinkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+		}
+
+		protected HttpContext HttpContext => ContextAccessor.HttpContext;
+
+		protected object EndpointDataSource => HttpContext.RequestServices.GetRequiredService<EndpointDataSource>();
+
+		protected string Host
+		{
+			get
+			{
+				var context = ContextAccessor.HttpContext;
+				var request = context.Request;
+
+				return GetFormatedPath($"{request.Scheme}://{request.Host}");
+			}
 		}
 
 		public abstract (string Method, string Uri) GenerateEndpoint(TPolicy policy, object result);

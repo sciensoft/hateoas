@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Sciensoft.Hateoas.Constants;
 using Sciensoft.Hateoas.Exceptions;
-using Sciensoft.Hateoas.Repository;
+using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Linq.Expressions;
 
 namespace Sciensoft.Hateoas
 {
+	/// <summary>
+	/// An <see cref="PolicyBuilder{T}"/> to add the policies to.
+	/// </summary>
+	/// <typeparam name="T">An view-model object type to configure the policies to.</typeparam>
 	public sealed class PolicyBuilder<T>
 		where T : class
 	{
@@ -18,8 +22,8 @@ namespace Sciensoft.Hateoas
 		/// <returns></returns>
 		public PolicyBuilder<T> AddSelf(Expression<Func<T, object>> expression, string message = null)
 		{
-			PolicyInMemoryRepository.LinksPolicyInMemory.Add(
-				new PolicyInMemoryRepository.TemplatePolicy(typeof(T), expression, PolicyConstants.Self)
+			InMemoryPolicyRepository.InMemoryPolicies.Add(
+				new InMemoryPolicyRepository.SelfPolicy(typeof(T), expression, PolicyConstants.Self)
 				{
 					Method = HttpMethods.Get,
 					Message = message
@@ -40,11 +44,11 @@ namespace Sciensoft.Hateoas
 		{
 			if (string.IsNullOrWhiteSpace(routeName))
 			{
-				throw new InvalidPolicyConfigurationException($"Routed Policy requires '{nameof(routeName)}'.");
+				throw new InvalidPolicyConfigurationException($"Routed policy requires '{nameof(routeName)}'.");
 			}
 
-			PolicyInMemoryRepository.LinksPolicyInMemory.Add(
-				new PolicyInMemoryRepository.RoutePolicy(typeof(T), expression, routeName)
+			InMemoryPolicyRepository.InMemoryPolicies.Add(
+				new InMemoryPolicyRepository.RoutePolicy(typeof(T), expression, routeName)
 				{
 					Method = method,
 					Message = message
@@ -54,25 +58,15 @@ namespace Sciensoft.Hateoas
 		}
 
 		/// <summary>
-		/// Adds query based URI to the resource representation.
-		/// </summary>
-		/// <param name="expression"></param>
-		/// <param name="parameterName"></param>
-		/// <param name="method"></param>
-		/// <param name="message"></param>
-		/// <returns></returns>
-		public PolicyBuilder<T> AddQuery(Expression<Func<T, object>> expression, string parameterName, string method = null, string message = null)
-		{
-			throw new NotImplementedException("Feature not implemented yet.");
-		}
-
-		/// <summary>
 		/// Adds custom defined URI to the resource representation, e.g., would be pointing to an external URI.
 		/// </summary>
-		/// <param name="expression">Path expression, e.g. @"https://my-external-uri.com/api/resource/{@id}"</param>
-		/// <param name="linkKey">Link identifier</param>
-		/// <param name="method">Resource method as per HTTP methods, e.g. GET/HEAD/POST, for more visit <see cref="https://tools.ietf.org/html/rfc7231#section-4" /></param>
-		/// <param name="message">Usage message</param>
+		/// <remarks>
+		/// It's possible to use tokens E.g. [controller], [action], [your-own] to match and replace by the route values.
+		/// </remarks>
+		/// <param name="expression">Path expression for link generation, e.g. 'https://my-external-uri.com/api/resource/{@id}'.</param>
+		/// <param name="linkKey">Link identifier.</param>
+		/// <param name="method">Resource method as per HTTP methods, e.g. GET/HEAD/POST, visit <inheritdoc path="https://tools.ietf.org/html/rfc7231#section-4"/> for more information.</param>
+		/// <param name="message">Descriptive message for the link.</param>
 		/// <returns></returns>
 		public PolicyBuilder<T> AddCustomPath(Expression<Func<T, object>> expression, string linkKey, string method = null, string message = null)
 		{
@@ -81,10 +75,9 @@ namespace Sciensoft.Hateoas
 				throw new InvalidPolicyConfigurationException($"Custom Policy requires '{nameof(linkKey)}'.");
 			}
 
-			PolicyInMemoryRepository.LinksPolicyInMemory.Add(
-				new PolicyInMemoryRepository.TemplatePolicy(typeof(T), expression, linkKey)
+			InMemoryPolicyRepository.InMemoryPolicies.Add(
+				new InMemoryPolicyRepository.CustomPolicy(typeof(T), expression, linkKey)
 				{
-					Template = null,
 					Method = method,
 					Message = message
 				});

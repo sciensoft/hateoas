@@ -19,16 +19,26 @@ namespace Sciensoft.Hateoas.WebSample
 		{
 			services
 				.AddControllers()
-				.AddLinks(policy =>
+				.AddLink(builder =>
 				{
-					policy
-						.AddPolicy<SampleViewModel>(model =>
+					builder
+						.AddPolicy<BookViewModel>(model =>
 						{
 							model
 								.AddSelf(m => m.Id, "This is a GET self link.")
+								.AddRoute(m => m.Id, BookController.PostWithId)
+								.AddRoute(m => m.Id, BookController.DeleteWithId)
 								.AddCustomPath(m => m.Id, "Edit", method: HttpMethods.Post, message: "Edits resource")
-								.AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.")
-								.AddRoute(m => m.Id, SampleController.GetWithId);
+								.AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.");
+						});
+
+					builder
+						.AddPolicy<ArticleViewModel>(model =>
+						{
+							model
+								.AddSelf(m => m.Id, "Self link.")
+								.AddRoute(m => m.Id, ArticlesController.UpdatedWithId)
+								.AddCustomPath(m => $"/api/[controller]/list", "List All", method: HttpMethods.Post);
 						});
 				});
 		}
