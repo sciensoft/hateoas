@@ -12,7 +12,7 @@ namespace Sciensoft.Hateoas.Tdd
 {
 	public class ExpressionCompilationTests
 	{
-		[Fact]
+		[Fact(Skip = "Ongoing tests")]
 		public void OngoingTestLab()
 		{
 			// Arrange
