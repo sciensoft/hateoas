@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Sciensoft.Hateoas.Repositories;
 using System;
@@ -24,18 +25,33 @@ namespace Sciensoft.Hateoas.Providers
 
 		public override (string Method, string Uri) GenerateEndpoint(InMemoryPolicyRepository.RoutePolicy policy, object result)
 		{
+			string targetRouteName = policy.RouteName;
 			var routeData = HttpContext.GetRouteData();
 
-			var controllerValue = routeData.Values.FirstOrDefault(rv => rv.Key.Equals("controller")).Value.ToString();
-			if (string.IsNullOrWhiteSpace(controllerValue))
+			var controllerName = routeData.Values.FirstOrDefault(rv => rv.Key.Equals("controller")).Value.ToString();
+			if (string.IsNullOrWhiteSpace(controllerName))
 			{
 				return default;
 			}
 
-			var routeInfo = _actionsProvider.ActionDescriptors.Items
+			var controllerRouteValues = _actionsProvider.ActionDescriptors.Items
+				.Where(r => r.RouteValues.Any(rv => rv.Value.Equals(controllerName)));
+
+			var routeInfo = controllerRouteValues
 				.FirstOrDefault(r =>
-					r.RouteValues.Any(rv => rv.Value.Equals(controllerValue)) &&
-					r.AttributeRouteInfo.Name != null && r.AttributeRouteInfo.Name.Equals(policy.RouteName));
+					r.AttributeRouteInfo != null
+					&& r.AttributeRouteInfo.Name != null
+					&& (r.AttributeRouteInfo.Name.Equals(targetRouteName)));
+
+			if (routeInfo == null)
+			{
+				targetRouteName = null;
+				routeInfo = controllerRouteValues
+					.FirstOrDefault(c => c.EndpointMetadata.Any(e =>
+						(e as HttpMethodAttribute) != null
+						&& ((HttpMethodAttribute)e).Name != null
+						&& ((HttpMethodAttribute)e).Name.Equals(policy.RouteName)));
+			}
 
 			var expressionMember = (((policy.Expression as LambdaExpression)?.Body as UnaryExpression)?.Operand as MemberExpression)?.Member;
 			routeInfo.RouteValues.TryAdd(expressionMember?.Name, result.ToString());
@@ -43,7 +59,7 @@ namespace Sciensoft.Hateoas.Providers
 			var httpMethodMetadata = routeInfo.EndpointMetadata.FirstOrDefault(x => x is HttpMethodMetadata) as HttpMethodMetadata;
 			var httpMethod = httpMethodMetadata.HttpMethods.FirstOrDefault();
 
-			string virtualPath = LinkGenerator.GetPathByRouteValues(HttpContext, policy.RouteName, routeInfo.RouteValues);
+			string virtualPath = LinkGenerator.GetPathByRouteValues(HttpContext, targetRouteName, routeInfo.RouteValues);
 			string finalPath = GetFormatedPath($"{virtualPath}");
 
 			return (httpMethod, $"{Host}/{finalPath}");

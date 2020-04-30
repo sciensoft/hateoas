@@ -11,17 +11,17 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 	[Route("api/[controller]/[action]")]
 	public class ArticlesController : ControllerBase
 	{
-		public const string UpdateWithId = nameof(UpdateWithId);
-		public const string DeleteWithId = nameof(DeleteWithId);
+		public const string UpdateArticleById = nameof(UpdateArticleById);
+		public const string DeleteArticleById = nameof(DeleteArticleById);
 
 		[HttpGet]
-		public ActionResult<IEnumerable<ArticleViewModel>> Get()
-			=> Ok(InMemoryArticlesRepository.Articles.Select(b => b.Value));
+		public ActionResult<IEnumerable<ArticleViewModel>> List()
+			=> Ok(InMemoryArticlesCollection.Articles.Select(b => b.Value));
 
 		[HttpGet("{id:guid}")]
 		public ActionResult<ArticleViewModel> Get(Guid id)
 		{
-			var model = InMemoryArticlesRepository.Articles.FirstOrDefault(x => x.Key.Equals(id));
+			var model = InMemoryArticlesCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
 
 			if (model.Value == null)
 			{
@@ -36,7 +36,7 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 		{
 			Debug.Assert(article != null);
 
-			if (!InMemoryArticlesRepository.Articles.TryAdd(article.Id, article))
+			if (!InMemoryArticlesCollection.Articles.TryAdd(article.Id, article))
 			{
 				throw new InvalidOperationException($"Article with Id '{article.Id}' already exists. Try PUT operation to update the item.");
 			}
@@ -44,38 +44,38 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 			return CreatedAtAction(nameof(Get), article.Id);
 		}
 
-		[HttpPut("{id:guid}", Name = UpdateWithId)]
+		[HttpPut("{id:guid}", Name = UpdateArticleById)]
 		public IActionResult Put(Guid id, [FromBody] ArticleViewModel article)
 		{
 			Debug.Assert(article != null);
 
 			article.Id = id;
-			var model = InMemoryArticlesRepository.Articles.FirstOrDefault(x => x.Key.Equals(id));
+			var model = InMemoryArticlesCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
 
 			if (model.Value == null)
 			{
 				return NotFound(id);
 			}
 
-			if (!InMemoryArticlesRepository.Articles.TryAdd(id, article))
+			if (!InMemoryArticlesCollection.Articles.TryAdd(id, article))
 			{
-				InMemoryArticlesRepository.Articles[id] = article;
+				InMemoryArticlesCollection.Articles[id] = article;
 			}
 
 			return CreatedAtAction(nameof(Get), id);
 		}
 
-		[HttpDelete("{id:guid}", Name = DeleteWithId)]
+		[HttpDelete("{id:guid}", Name = DeleteArticleById)]
 		public IActionResult Delte(Guid id)
 		{
-			var model = InMemoryArticlesRepository.Articles.FirstOrDefault(x => x.Key.Equals(id));
+			var model = InMemoryArticlesCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
 
 			if (model.Value == null)
 			{
 				return NotFound();
 			}
 
-			InMemoryArticlesRepository.Articles.Remove(id);
+			InMemoryArticlesCollection.Articles.Remove(id);
 
 			return Ok();
 		}
