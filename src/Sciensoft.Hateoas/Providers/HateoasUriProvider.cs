@@ -21,7 +21,7 @@ namespace Sciensoft.Hateoas.Providers
 
 		protected HttpContext HttpContext => ContextAccessor.HttpContext;
 
-		protected object EndpointDataSource => HttpContext.RequestServices.GetRequiredService<EndpointDataSource>();
+		protected EndpointDataSource EndpointDataSource => HttpContext.RequestServices.GetRequiredService<EndpointDataSource>();
 
 		protected string Host
 		{

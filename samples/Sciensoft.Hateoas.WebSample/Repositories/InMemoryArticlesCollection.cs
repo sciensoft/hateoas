@@ -1,13 +1,13 @@
 ﻿using Sciensoft.Hateoas.WebSample.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Sciensoft.Hateoas.WebSample.Repositories
 {
-	public static class InMemoryArticlesRepository
+	internal static class InMemoryArticlesCollection
 	{
-		public static IList<ArticleViewModel> Articles = new List<ArticleViewModel>
-		{
+		public static readonly IDictionary<Guid, ArticleViewModel> Articles = (new List<ArticleViewModel> {
 			new ArticleViewModel {
 				Id = Guid.Parse("{83389205-B1C9-4523-A3BB-85D7255546F9}"),
 				Title = "The Girl Beneath the Sea (Underwater Investigation Unit Book 1)"
@@ -29,9 +29,9 @@ namespace Sciensoft.Hateoas.WebSample.Repositories
 				Title = "Where the Crawdads Sing"
 			},
 			new ArticleViewModel {
-				Id = Guid.Parse("{9DE3C4EB-35F5-4E91-8D7A-AF25582FD596}"),
+				Id = Guid.Parse("{B6D3E7D5-26FD-4C33-B036-0EF18D79BC94}"),
 				Title = "A Girl From Nowhere (The Firewall Trilogy Book 1)"
-			},
-		};
+			}
+		}).ToDictionary(k => k.Id);
 	}
 }

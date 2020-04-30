@@ -26,8 +26,8 @@ namespace Sciensoft.Hateoas.WebSample
 						{
 							model
 								.AddSelf(m => m.Id, "This is a GET self link.")
-								.AddRoute(m => m.Id, BookController.PostWithId)
-								.AddRoute(m => m.Id, BookController.DeleteWithId)
+								.AddRoute(m => m.Id, BookController.UpdateBookById)
+								.AddRoute(m => m.Id, BookController.DeleteBookById)
 								.AddCustomPath(m => m.Id, "Edit", method: HttpMethods.Post, message: "Edits resource")
 								.AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.");
 						});
@@ -37,8 +37,17 @@ namespace Sciensoft.Hateoas.WebSample
 						{
 							model
 								.AddSelf(m => m.Id, "Self link.")
-								.AddRoute(m => m.Id, ArticlesController.UpdatedWithId)
-								.AddCustomPath(m => $"/api/[controller]/list", "List All", method: HttpMethods.Post);
+								.AddRoute(m => m.Id, ArticlesController.UpdateArticleById)
+								.AddCustomPath(m => $"/api/[controller]/list", "List All", method: HttpMethods.Get);
+						});
+
+					builder
+						.AddPolicy<AuthorViewModel>(model =>
+						{
+							model
+								.AddSelf(m => m.Id, "Self link.")
+								.AddRoute(m => m.Id, AuthorsController.UpdateAuthorById)
+								.AddCustomPath(m => $"/api/[controller]", "List All", method: HttpMethods.Post);
 						});
 				});
 		}
@@ -60,7 +69,11 @@ namespace Sciensoft.Hateoas.WebSample
 			appBuilder
 				.UseRouting()
 				//.UseAuthorization()
-				.UseEndpoints(builder => builder.MapControllers());
+				.UseEndpoints(builder =>
+				{
+					builder.MapControllers();
+					builder.MapControllerRoute("authors", "api/{controller=Authors}/{action=Get}/{id?}");
+				});
 		}
 	}
 }

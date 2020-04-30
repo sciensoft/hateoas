@@ -19,7 +19,7 @@ namespace Sciensoft.Hateoas.Extensions
 		/// </summary>
 		/// <param name="services">The <see cref="IServiceCollection" /> to add services to.</param>
 		/// <param name="configure">An <see cref="Action{LinkBuilder}"/> to configure the provided <see cref="LinkBuilder"/>.</param>
-		/// <returns></returns>
+		/// <returns>An <see cref="IServiceCollection"/> instance with required services registered.</returns>
 		public static IServiceCollection AddLink(
 			this IServiceCollection services,
 			Action<LinkBuilder> configure = null)
@@ -35,19 +35,9 @@ namespace Sciensoft.Hateoas.Extensions
 			services
 				.AddMvcCore(setup =>
 				{
-					setup.Filters.Add<LocationUriResultFilter>();
-					setup.Filters.Add<HateoasResultFilter>();
+					setup.Filters.Add<LocationUriResultFilterAttribute>();
+					setup.Filters.Add<HateoasResultFilterAttribute>();
 				});
-
-			//.AddJsonOptions(options =>
-			//{
-			//	options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver
-			//	{
-			//		NamingStrategy = new SnakeCaseNamingStrategy()
-			//	};
-			//	options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;
-			//	options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-			//});
 
 			configure?.Invoke(linkBuilder);
 
@@ -59,8 +49,11 @@ namespace Sciensoft.Hateoas.Extensions
 		/// </summary>
 		/// <param name="mvcBuilder">The <see cref="IMvcBuilder" /> services to add services to.</param>
 		/// <param name="configure">An <see cref="Action{LinkBuilder}"/> to configure the provided <see cref="LinkBuilder"/>.</param>
-		/// <returns></returns>
-		public static IServiceCollection AddLink(this IMvcBuilder mvcBuilder, Action<LinkBuilder> configure = null)
-			=> mvcBuilder.Services.AddLink(configure);
+		/// <returns>An <see cref="IMvcBuilder"/> instance with required services registered.</returns>
+		public static IMvcBuilder AddLink(this IMvcBuilder mvcBuilder, Action<LinkBuilder> configure = null)
+		{
+			mvcBuilder.Services.AddLink(configure);
+			return mvcBuilder;
+		}
 	}
 }

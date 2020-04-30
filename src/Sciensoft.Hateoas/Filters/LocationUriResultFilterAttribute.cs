@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.Filters
 {
-    internal class LocationUriResultFilter : ResultFilterAttribute
+    internal class LocationUriResultFilterAttribute : ResultFilterAttribute
     {
         public override async Task OnResultExecutionAsync(
             ResultExecutingContext context, 
