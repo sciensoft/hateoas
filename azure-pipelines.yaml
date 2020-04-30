@@ -37,6 +37,7 @@ steps:
         /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/tests/**/coverage.*.xml" 
         /d:sonar.host.url=https://sonarcloud.io 
         /d:sonar.login=$(sonar.token)
+        /d:sonar.exclusions=samples/*
   
   - task: Bash@3
     displayName: '🔧 Build'
