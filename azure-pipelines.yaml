@@ -52,7 +52,7 @@ steps:
 
   - task: UseGitVersion@5
     displayName: 'Semantic Versioning'
-    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/', 'refs/heads/master'))
+    condition: and(succeeded(), in(variables['Build.SourceBranch'], 'refs/heads/release/**', 'refs/heads/master'))
     inputs:
       versionSpec: '5.x'
       updateAssemblyInfo: false

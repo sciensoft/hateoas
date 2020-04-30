@@ -74,7 +74,6 @@ namespace Sciensoft.Hateoas.Filters
 
 			var mapperConfig = new MapperConfiguration(config =>
 			{
-				//config.CreateMissingTypeMaps = true;
 				config.CreateMap(sourcePayload.GetType(), targetPayloadType);
 			});
 
