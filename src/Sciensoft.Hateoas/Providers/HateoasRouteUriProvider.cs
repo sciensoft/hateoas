@@ -48,7 +48,7 @@ namespace Sciensoft.Hateoas.Providers
 				targetRouteName = null;
 				routeInfo = controllerRouteValues
 					.FirstOrDefault(c => c.EndpointMetadata.Any(e =>
-						(e as HttpMethodAttribute) != null
+						(e is HttpMethodAttribute)
 						&& ((HttpMethodAttribute)e).Name != null
 						&& ((HttpMethodAttribute)e).Name.Equals(policy.RouteName)));
 			}
