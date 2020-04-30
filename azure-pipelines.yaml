@@ -59,18 +59,11 @@ steps:
       updateAssemblyInfo: false
 
   - task: Bash@3
-    displayName: '💻 Echo'
-    enabled: false
-    inputs:
-      targetType: 'inline'
-      script: echo $(GitVersion.SemVer) && echo $(sonar.sciensoft.project.key)
-
-  - task: Bash@3
     displayName: '📦 Pack'
     condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
     inputs:
       targetType: 'inline'
-      script: dotnet pack src/**/Sciensoft.Hateoas.csproj --include-symbols --include-source /p:PackageVersion=$(GitVersion.SemVer) --verbosity normal
+      script: dotnet pack src/**/Sciensoft.Hateoas.csproj -c release -o $(build.artifactstagingdirectory) /p:PackageVersion=$(GitVersion.SemVer) --include-symbols --include-source --verbosity normal
 
   - task: Bash@3
     displayName: 'Publish SonarCloud Quality Gate Results'
@@ -90,3 +83,9 @@ steps:
     inputs:
       codeCoverageTool: cobertura
       summaryFileLocation: tests/**/coverage.*.xml
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact'
+    inputs:
+      PathtoPublish: $(build.artifactstagingdirectory)
+      artifactName: drop
