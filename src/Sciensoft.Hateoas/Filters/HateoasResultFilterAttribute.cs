@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.Filters
 {
-	internal class HateoasResultFilter : ResultFilterAttribute
+	internal class HateoasResultFilterAttribute : ResultFilterAttribute
 	{
-		private readonly ILogger<HateoasResultFilter> _logger;
+		private readonly ILogger<HateoasResultFilterAttribute> _logger;
 		private readonly IHateoasResultProvider _resultProvider;
 		private readonly JsonSerializerOptions _jsonOptions;
 
-		public HateoasResultFilter(
-			ILogger<HateoasResultFilter> logger,
+		public HateoasResultFilterAttribute(
+			ILogger<HateoasResultFilterAttribute> logger,
 			IHateoasResultProvider resultProvider,
 			JsonSerializerOptions jsonOptions = null)
 		{
@@ -74,7 +74,6 @@ namespace Sciensoft.Hateoas.Filters
 
 			var mapperConfig = new MapperConfiguration(config =>
 			{
-				//config.CreateMissingTypeMaps = true;
 				config.CreateMap(sourcePayload.GetType(), targetPayloadType);
 			});
 

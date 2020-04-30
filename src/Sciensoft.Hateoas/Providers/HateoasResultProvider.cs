@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Collections.Generic;

@@ -3,6 +3,7 @@ using Sciensoft.Hateoas.WebSample.Models;
 using Sciensoft.Hateoas.WebSample.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Sciensoft.Hateoas.WebSample.Controllers
@@ -10,58 +11,71 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 	[Route("api/books")]
 	public class BookController : ControllerBase
 	{
-		public const string PostWithId = nameof(PostWithId);
-		public const string DeleteWithId = nameof(DeleteWithId);
+		public const string UpdateBookById = nameof(UpdateBookById);
+		public const string DeleteBookById = nameof(DeleteBookById);
 
 		[HttpGet]
 		public ActionResult<IEnumerable<BookViewModel>> Get()
-		{
-			string location = Url.Action(nameof(Get), new { id = Guid.NewGuid() });
-
-			return Ok(InMemoryBookRepository.Books);
-		}
+			=> Ok(InMemoryBookCollection.Books.Select(b => b.Value));
 
 		[HttpGet("{id:guid}")]
 		public ActionResult<BookViewModel> Get(Guid id)
 		{
-			var model = InMemoryBookRepository.Books.FirstOrDefault(x => x.Id.Equals(id));
+			var model = InMemoryBookCollection.Books.FirstOrDefault(x => x.Key.Equals(id));
 
-			if (model == null)
+			if (model.Value == null)
 			{
 				return NotFound(id);
 			}
 
-			return model;
+			return model.Value;
 		}
 
-		[HttpPost("{id:guid}", Name = PostWithId)]
-		public IActionResult Post(Guid id, BookViewModel book)
+		[HttpPost]
+		public IActionResult Post([FromBody] BookViewModel book)
 		{
-			var model = InMemoryBookRepository.Books.FirstOrDefault(x => x.Id.Equals(id));
+			Debug.Assert(book != null);
 
-			if (model == null)
+			if (!InMemoryBookCollection.Books.TryAdd(book.Id, book))
 			{
-				InMemoryBookRepository.Books.Add(book);
-			}
-			else
-			{
-				model = book;
+				throw new InvalidOperationException($"Book with Id '{book.Id}' already exists. Try PUT operation to update the item.");
 			}
 
-			return CreatedAtAction(nameof(Get), model.Id);
+			return CreatedAtAction(nameof(Get), book.Id);
 		}
 
-		[HttpDelete("{id:guid}", Name = DeleteWithId)]
+		[HttpPut("{id:guid}", Name = UpdateBookById)]
+		public IActionResult Put(Guid id, [FromBody] BookViewModel book)
+		{
+			Debug.Assert(book != null);
+
+			book.Id = id;
+			var model = InMemoryBookCollection.Books.FirstOrDefault(x => x.Key.Equals(id));
+
+			if (model.Value == null)
+			{
+				return NotFound(id);
+			}
+
+			if (!InMemoryBookCollection.Books.TryAdd(id, book))
+			{
+				InMemoryBookCollection.Books[id] = book;
+			}
+
+			return CreatedAtAction(nameof(Get), id);
+		}
+
+		[HttpDelete("{id:guid}", Name = DeleteBookById)]
 		public IActionResult Delte(Guid id)
 		{
-			var model = InMemoryBookRepository.Books.FirstOrDefault(x => x.Id.Equals(id));
+			var model = InMemoryBookCollection.Books.FirstOrDefault(x => x.Key.Equals(id));
 
-			if (model == null)
+			if (model.Value == null)
 			{
 				return NotFound();
 			}
 
-			InMemoryBookRepository.Books.Remove(model);
+			InMemoryBookCollection.Books.Remove(id);
 
 			return Ok();
 		}

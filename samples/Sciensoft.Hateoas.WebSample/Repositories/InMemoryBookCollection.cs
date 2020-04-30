@@ -1,12 +1,13 @@
 ﻿using Sciensoft.Hateoas.WebSample.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Sciensoft.Hateoas.WebSample.Repositories
 {
-	public static class InMemoryBookRepository
+	internal static class InMemoryBookCollection
 	{
-		public static IList<BookViewModel> Books = new List<BookViewModel>
+		public static readonly IDictionary<Guid, BookViewModel> Books = (new List<BookViewModel>
 		{
 			new BookViewModel {
 				Id = Guid.Parse("{83389205-B1C9-4523-A3BB-85D7255546F9}"),
@@ -39,11 +40,11 @@ namespace Sciensoft.Hateoas.WebSample.Repositories
 				Tags = new [] { "Literature", "Mothers" }
 			},
 			new BookViewModel {
-				Id = Guid.Parse("{9DE3C4EB-35F5-4E91-8D7A-AF25582FD596}"),
+				Id = Guid.Parse("{A1E3C4EB-35F5-4E91-8D7A-AF25582FD596}"),
 				Title = "A Girl From Nowhere (The Firewall Trilogy Book 1)",
 				Author = "James Maxwell",
 				Tags = new [] { "Fantasy", "Adventure", "Action" }
 			},
-		};
+		}).ToDictionary(b => b.Id);
 	}
 }

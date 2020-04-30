@@ -1,6 +1,6 @@
 ﻿namespace Sciensoft.Hateoas.Constants
 {
-    internal class PolicyConstants
+    internal static class PolicyConstants
     {
         public const string Self = nameof(Self);
 
