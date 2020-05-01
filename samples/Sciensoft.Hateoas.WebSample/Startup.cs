@@ -72,7 +72,7 @@ namespace Sciensoft.Hateoas.WebSample
 				.UseEndpoints(builder =>
 				{
 					builder.MapControllers();
-					builder.MapControllerRoute("authors", "api/{controller=Authors}/{action=Get}/{id?}");
+					builder.MapControllerRoute("authors", "api/{controller}/{action}/{id?}");
 				});
 		}
 	}
