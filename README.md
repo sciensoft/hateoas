@@ -30,15 +30,48 @@ public void ConfigureServices(IServiceCollection services)
     .AddLinks(policy =>
     {
       policy
-        .AddPolicy<SampleViewModel>(model =>
+        .AddPolicy<BookViewModel>(model =>
         {
           model
             .AddSelf(m => m.Id, "This is a GET self link.")
-            .AddCustom(m => m.Id, "Edit", method: HttpMethods.Put)
-            .AddCustom(m => $"/move/resource/state/?id={m.Id}", "MoveResourceState", method: HttpMethods.Get, message: "Any operation in your resource.")
-            .AddRoute(m => m.Id, SampleController.GetWithId);
+            .AddRoute(m => m.Id, BookController.UpdateBookById)
+            .AddRoute(m => m.Id, BookController.DeleteBookById)
+            .AddCustomPath(m => m.Id, "Edit", method: HttpMethods.Post, message: "Edits resource")
+            .AddCustomPath(m => $"/change/other/path/?id={m.Id}", "CustomLink1", method: HttpMethods.Post, message: "Any operation in your resource.")
+            .AddCustomPath(m => $"other/path/?author={m.Author}", "CustomLink2", method: HttpMethods.Put, message: "Any operation in your resource.");
         });
     });
+}
+```
+
+Here is how your constroller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out!
+
+```csharp
+[Route("api/books")]
+public class BookController : ControllerBase
+{
+    public const string UpdateBookById = nameof(UpdateBookById);
+    public const string DeleteBookById = nameof(DeleteBookById);
+
+    [HttpGet]
+    public ActionResult<IEnumerable<BookViewModel>> Get()
+    { /* Code omitted for simplicity */ }
+
+    [HttpGet("{id:guid}")]
+    public ActionResult<BookViewModel> Get(Guid id)
+    { /* Code omitted for simplicity */ }
+
+    [HttpPost]
+    public IActionResult Post([FromBody] BookViewModel book)
+    { /* Code omitted for simplicity */ }
+
+    [HttpPut("{id:guid}", Name = UpdateBookById)]
+    public IActionResult Put(Guid id, [FromBody] BookViewModel book)
+    { /* Code omitted for simplicity */ }
+
+    [HttpDelete("{id:guid}", Name = DeleteBookById)]
+    public IActionResult Delte(Guid id)
+    { /* Code omitted for simplicity */ }
 }
 ```
 
@@ -46,33 +79,46 @@ public void ConfigureServices(IServiceCollection services)
 
 ```json
 {
-    "id": "571be3ce-7ac5-4d99-9872-c6bc868db092",
-    "name": "Hello Sample View",
-    "samples": [
-        "A",
-        "B",
-        "C"
+    "Id": "8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
+    "Title": "The Girl Who Lived: A Thrilling Suspense Novel",
+    "Author": "Christopher Greyson",
+    "Tags": [
+        "Fiction",
+        "Crime",
+        "Murder",
+        "Thriller"
     ],
+    "Reference": null,
     "links": [
         {
             "method": "GET",
-            "uri": "http://localhost:52350/api/samples/571be3ce-7ac5-4d99-9872-c6bc868db092",
+            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
             "relation": "Self"
         },
         {
             "method": "PUT",
-            "uri": "http://localhost:52350/api/samples/571be3ce-7ac5-4d99-9872-c6bc868db092",
+            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
+            "relation": "UpdateBookById"
+        },
+        {
+            "method": "DELETE",
+            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
+            "relation": "DeleteBookById"
+        },
+        {
+            "method": "POST",
+            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
             "relation": "Edit"
         },
         {
-            "method": "GET",
-            "uri": "http://localhost:52350/api/samples/move/resource/state/?id=571be3ce-7ac5-4d99-9872-c6bc868db092",
-            "relation": "MoveResourceState",
-            "message": "Any operation in your resource."
+            "method": "POST",
+            "uri": "http://your-domain.io/change/other/path/%3fid=8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
+            "relation": "CustomLink1"
         },
         {
-            "uri": "http://localhost:52350/api/samples/api/samples/571be3ce-7ac5-4d99-9872-c6bc868db092",
-            "relation": "GetWithId"
+            "method": "PUT",
+            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a/other/path/%3fauthor=Christopher Greyson",
+            "relation": "CustomLink2"
         }
     ]
 }
@@ -80,14 +126,20 @@ public void ConfigureServices(IServiceCollection services)
 
 ## Features
 
-- Hateoas configuration with Lambda Expression
+- Self link link generation
+- Named Route link generation
+- Custom link generation with support to path override
+- Configuration with Lambda Expression
+- Attribute Routing support
+- Conventional Routing support
 
 ### Roadmap
 
-- Add support for .NET Authorization
-- Add support for Content Negotiation type in the read-model
-- Add support for Absolute or Relative links configuration
-- Create project website
+- Add support to extending link generation
+- Add support to external links configuration
+- Add support to bypass model link generation
+- Add support to .NET Authorization
+- Add support to Content Negotiation type in the read-model
 
 ## Contributions
 

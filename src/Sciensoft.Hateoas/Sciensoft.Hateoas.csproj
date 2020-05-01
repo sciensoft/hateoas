@@ -5,15 +5,13 @@
 		<AssemblyName>Sciensoft.Hateoas</AssemblyName>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<Description>
-			A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core WebApi apps. It's based on REST application architecture style **Uniform Interface** constraint _hypermedia as the engine of application state (HATEOAS)_.
+			A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your .NET Core Restful/WebApi apps. It's based on REST application architecture style Uniform Interface constraint Hypermedia As The Engine Of Application State (HATEOAS).
 
-			**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with `Sciensoft.Hateoas`**.
+			The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with Sciensoft.Hateoas.
 
-			Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce [REST constraints][REST-Constraints] or [Richardson Maturity Level][Richardson-Maturity-Level] and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
+			Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce the REST constraints (https://rebrand.ly/restful-explained) or Richardson Maturity Level (https://rebrand.ly/richardson-maturity-model) and all of that has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
 
-			Learn more about RESTful API [here][Learn-RestfulApi] and Lambda Expressions [here][Lambda-Expressions].
-
-			For more, visit [Sciensoft.Hateoas](https://github.com/higtrollers/Sciensoft.Hateoas)!
+			Visit https://github.com/higtrollers/Sciensoft.Hateoas for more details and full documentation.
 		</Description>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<RepositoryUrl>https://github.com/higtrollers/Sciensoft.Hateoas</RepositoryUrl>

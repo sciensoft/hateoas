@@ -23,7 +23,7 @@ namespace Sciensoft.Hateoas.WebSample
 				{
 					webBuilder.ConfigureKestrel(options =>
 					{
-						options.Listen(IPAddress.Any, 6001);
+						options.ListenAnyIP(6080);
 					});
 					webBuilder.UseStartup<Startup>();
 				});
