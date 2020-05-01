@@ -44,6 +44,7 @@ namespace Sciensoft.Hateoas.Providers
 				Method = endpoint.Item1,
 				Uri = endpoint.Item2,
 				Relation = policy.Name,
+				policy.Message
 			});
 
 			await Task.CompletedTask.ConfigureAwait(false);

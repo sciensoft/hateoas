@@ -13,6 +13,10 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 		public const string UpdateAuthorById = nameof(UpdateAuthorById);
 
 		[HttpGet]
+		public ActionResult<IEnumerable<ArticleViewModel>> List()
+			=> Ok(InMemoryAuthorCollection.Authors.Select(b => b.Value));
+
+		[HttpGet]
 		public IEnumerable<AuthorViewModel> Get()
 			=> InMemoryAuthorCollection.Authors.Select(a => a.Value);
 

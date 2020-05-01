@@ -37,8 +37,9 @@ public void ConfigureServices(IServiceCollection services)
             .AddRoute(m => m.Id, BookController.UpdateBookById)
             .AddRoute(m => m.Id, BookController.DeleteBookById)
             .AddCustomPath(m => m.Id, "Edit", method: HttpMethods.Post, message: "Edits resource")
-            .AddCustomPath(m => $"/change/other/path/?id={m.Id}", "CustomLink1", method: HttpMethods.Post, message: "Any operation in your resource.")
-            .AddCustomPath(m => $"other/path/?author={m.Author}", "CustomLink2", method: HttpMethods.Put, message: "Any operation in your resource.");
+            .AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.")
+            .AddExternalUri(m => m.Id, "https://my-domain.com/api/books/", "Custom Domain External Link")
+            .AddExternalUri(m => $"/search?q={m.Title}", "https://google.com", "Google Search External Links", message: "This will do a search on Google engine.");
         });
     });
 }
@@ -92,33 +93,45 @@ public class BookController : ControllerBase
     "links": [
         {
             "method": "GET",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "Self"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "Self",
+            "message": "This is a GET self link."
         },
         {
             "method": "PUT",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "UpdateBookById"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "UpdateBookById",
+            "message": null
         },
         {
             "method": "DELETE",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "DeleteBookById"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "DeleteBookById",
+            "message": null
         },
         {
             "method": "POST",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "Edit"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "Edit",
+            "message": "Edits resource"
         },
         {
             "method": "POST",
-            "uri": "http://your-domain.io/change/other/path/%3fid=8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "CustomLink1"
+            "uri": "http://localhost:6080/change/resource/state/%3fid=83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "ChangeResourceState",
+            "message": "Any operation in your resource."
         },
         {
-            "method": "PUT",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a/other/path/%3fauthor=Christopher Greyson",
-            "relation": "CustomLink2"
+            "method": "GET",
+            "uri": "https://my-domain.com/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "Custom Domain External Link",
+            "message": null
+        },
+        {
+            "method": "GET",
+            "uri": "https://google.com/search?q=The Girl Beneath the Sea (Underwater Investigation Unit Book 1)",
+            "relation": "Google Search External Links",
+            "message": "This will do a search on Google engine."
         }
     ]
 }
@@ -126,20 +139,20 @@ public class BookController : ControllerBase
 
 ## Features
 
-- Self link link generation
-- Named Route link generation
-- Custom link generation with support to path override
-- Configuration with Lambda Expression
-- Attribute Routing support
-- Conventional Routing support
+- Self link generation,
+- Named Route link generation,
+- Custom link generation with support to path override,
+- External links configuration,
+- Configuration with Lambda Expression,
+- Attribute Routing support, and
+- Conventional Routing support.
 
 ### Roadmap
 
-- Add support to extending link generation
-- Add support to external links configuration
-- Add support to bypass model link generation
-- Add support to .NET Authorization
-- Add support to Content Negotiation type in the read-model
+- Add support to extending link generation.
+- Add support to bypass model link generation.
+- Add support to .NET Authorization.
+- Add support to Content Negotiation type in the read-model.
 
 ## Contributions
 

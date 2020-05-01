@@ -53,7 +53,7 @@ namespace Sciensoft.Hateoas.Filters
 			}
 			catch (Exception ex)
 			{
-				_logger.LogWarning(ex, "Something went wrong while processing the link generation.");
+				_logger.LogWarning(ex, "Something went wrong while processing link generation.");
 			}
 
 			await base.OnResultExecutionAsync(context, next).ConfigureAwait(false);
