@@ -35,10 +35,11 @@ steps:
       script: $HOME/.dotnet/tools/dotnet-sonarscanner begin 
         /k:$(sonar.sciensoft.project.key) 
         /o:$(sonar.sciensoft.organization.key) 
-        /d:sonar.cs.cobertura.reportsPaths="$(Build.SourcesDirectory)/tests/**/coverage.*.xml" 
+        /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/tests/**/coverage.opencover.xml" 
         /d:sonar.host.url=https://sonarcloud.io 
         /d:sonar.login=$(sonar.token)
-        /d:sonar.exclusions=samples/*
+        /d:sonar.exclusions=samples/**/*.cs,
+        /d:sonar.test.exclusions=tests/**/*.cs
   
   - task: Bash@3
     displayName: '🔧 Build'
@@ -50,7 +51,7 @@ steps:
     displayName: '🧪 Tests & 🔬 Code Coverage'
     inputs:
       targetType: 'inline'
-      script: dotnet test tests/**/*.Tdd.csproj --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[Sciensoft.Hateoas.WebSample]*"
+      script: dotnet test tests/**/*.Tdd.csproj --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover,cobertura\" /p:Exclude="[Sciensoft.Hateoas.WebSample]*"
 
   - task: UseGitVersion@5
     displayName: 'Semantic Versioning'
@@ -83,7 +84,7 @@ steps:
     displayName: '🔬 Publish Code Coverage Results'
     inputs:
       codeCoverageTool: cobertura
-      summaryFileLocation: tests/**/coverage.*.xml
+      summaryFileLocation: tests/**/coverage.opencover.xml
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'
