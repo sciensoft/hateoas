@@ -2,17 +2,17 @@
 
 ![Sciensoft.Hateoas Build Status](https://dev.azure.com/Sciensoft/Sciensoft/_apis/build/status/Sciensoft.Hateoas?branchName=master)
 
-A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core WebApi apps. It's based on REST application architecture style **Uniform Interface** constraint _hypermedia as the engine of application state (HATEOAS)_.
+A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core RESTful/Web APIs. Based on the REST application architecture style, **Uniform Interface**, constraint _Hypermedia As The Engine Of Application State (HATEOAS)_.
 
-**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with `Sciensoft.Hateoas`**.
+**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. They all come beautifully out of the box with `Sciensoft.Hateoas`**.
 
-Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce <a href="https://medium.com/extend/what-is-rest-a-simple-explanation-for-beginners-part-2-rest-constraints-129a4b69a582" target="_blank">REST constraints</a> or <a href="https://martinfowler.com/articles/richardsonMaturityModel.html" target="_blank">Richardson Maturity Level</a> and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
+Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT enforce <a href="https://rebrand.ly/restful-explained" target="_blank">REST constraints</a> or <a href="https://rebrand.ly/richardson-maturity-model" target="_blank">Richardson Maturity Level</a>, and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
 
-Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions" target="_blank">here</a>.
+Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://rebrand.ly/dotnet-lambda-expressions" target="_blank">here</a>.
 
 ## Get Started
 
-Sciensoft.Hateoas can be installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager or `dotnet` CLI.
+Sciensoft.Hateoas gets installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager or `dotnet` CLI.
 
 ```bash
 Install-Package Sciensoft.Hateoas
@@ -20,7 +20,7 @@ Install-Package Sciensoft.Hateoas
 
 ### Configuration
 
-Using a fluent language, it can be configured easily adding the service to .NET dependency inversion pipeline.
+Using a fluent language, allows you to easily configure by adding the service to .NET Core dependency injection pipeline.
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -45,7 +45,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-Here is how your constroller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out!
+Here is how your controller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out!
 
 ```csharp
 [Route("api/books")]
@@ -76,7 +76,7 @@ public class BookController : ControllerBase
 }
 ```
 
-**Json Result:**
+**JSON Result:**
 
 ```json
 {
@@ -139,7 +139,7 @@ public class BookController : ControllerBase
 
 ## Features
 
-- Self link generation,
+- Self-link generation,
 - Named Route link generation,
 - Custom link generation with support to path override,
 - External links configuration,
@@ -149,14 +149,14 @@ public class BookController : ControllerBase
 
 ### Roadmap
 
-- Add support to extending link generation.
+- Add support for extending link generation.
 - Add support to bypass model link generation.
 - Add support to .NET Authorization.
 - Add support to Content Negotiation type in the read-model.
 
 ## Contributions
 
-Before start contributing, check our [CONTRIBUTING] guideline out, also, before doing a major change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
+Before start contributing, check our [CONTRIBUTING] guideline out, also, before doing any significant change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
 
 ## Issues
 
