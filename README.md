@@ -12,13 +12,13 @@ Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">h
 
 ## Get Started
 
-Sciensoft.Hateoas gets installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager or `dotnet` CLI.
+Sciensoft.Hateoas gets installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager.
 
 ```bash
 Install-Package Sciensoft.Hateoas
-# Or
-dotnet add package Sciensoft.Hateoas
 ```
+
+Or dotnet CLI `dotnet add package Sciensoft.Hateoas`.
 
 ### Configuration
 
