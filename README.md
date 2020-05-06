@@ -177,4 +177,4 @@ You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-
 [Richardson-Maturity-Level]:https://martinfowler.com/articles/richardsonMaturityModel.html
 [REST-Constraints]:https://medium.com/extend/what-is-rest-a-simple-explanation-for-beginners-part-2-rest-constraints-129a4b69a582
 [CONTRIBUTING]: ./CONTRIBUTING.md
-[Issues]: ./../../issues
+[Issues]: ./../../../issues
