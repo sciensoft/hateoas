@@ -16,6 +16,8 @@ Sciensoft.Hateoas gets installed using <a href="https://www.nuget.org/packages/S
 
 ```bash
 Install-Package Sciensoft.Hateoas
+# Or
+dotnet add package Sciensoft.Hateoas
 ```
 
 ### Configuration
