@@ -15,6 +15,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and thi
 **Added:**
 
 - External link generation policy.
+- Thread-safe in memory policy collection.
 - Extensibility for developers to add custom link policies.
 - Improving cove coverage and code quality.
 - XML code documentation for `HateoasUriProvider<TPolicy>` and `InMemoryPolicyRepository` classes.
