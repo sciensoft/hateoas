@@ -104,7 +104,57 @@ namespace Sciensoft.Hateoas.Tdd
 			Action act = () => policyBuilder.AddCustomPath(o => o, null);
 
 			// Assert
-			act.Should().Throw<InvalidPolicyConfigurationException>();
+			act.Should().Throw<InvalidPolicyConfigurationException>()
+				.WithMessage("Custom Policy requires 'linkKey' argument.");
+		}
+
+		#endregion
+
+		#region AddExternal
+
+		[Fact]
+		public void AddExternal_Should_AddLinkToPolicyInMemoryRepository()
+		{
+			// Arrange
+			string host = "https://google.com";
+			string linkKey = "ExternalLink";
+			var policyBuilder = new PolicyBuilder<object>();
+
+			// Act
+			policyBuilder.AddExternalUri(o => o, host, linkKey);
+
+			// Assert
+			InMemoryPolicyRepository.InMemoryPolicies
+				.Any(p => p is InMemoryPolicyRepository.CustomPolicy)
+				.Should().BeTrue();
+		}
+
+		[Fact]
+		public void AddExternal_Should_Throw_InvalidPolicyConfigurationException_IfHostArgumentIsNotProvided()
+		{
+			// Arrange
+			var policyBuilder = new PolicyBuilder<object>();
+
+			// Act
+			Action act = () => policyBuilder.AddExternalUri(o => o, string.Empty, null);
+
+			// Assert
+			act.Should().Throw<InvalidPolicyConfigurationException>()
+				.WithMessage("External Policy requires 'host' argument.");
+		}
+
+		[Fact]
+		public void AddExternal_Should_Throw_InvalidPolicyConfigurationExceptionIfLinkKeyArgumentIsNotProvided()
+		{
+			// Arrange
+			var policyBuilder = new PolicyBuilder<object>();
+
+			// Act
+			Action act = () => policyBuilder.AddExternalUri(o => o, "https://google.com", null);
+
+			// Assert
+			act.Should().Throw<InvalidPolicyConfigurationException>()
+				.WithMessage("External Policy requires 'linkKey' argument.");
 		}
 
 		#endregion

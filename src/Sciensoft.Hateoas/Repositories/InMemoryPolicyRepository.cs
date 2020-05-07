@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
@@ -14,7 +13,7 @@ namespace Sciensoft.Hateoas.Repositories
 		/// <summary>
 		/// List of registered policies.
 		/// </summary>
-		public static IList<Policy> InMemoryPolicies { get; } = new List<Policy>();
+		public static ConcurrentBag<Policy> InMemoryPolicies { get; } = new ConcurrentBag<Policy>();
 
 		/// <summary>
 		/// Abstract policy for link generation
@@ -106,7 +105,7 @@ namespace Sciensoft.Hateoas.Repositories
 			public ExternalPolicy(Type type, Expression expression, string host, string name = null, [CallerMemberName] string memberName = null)
 				: base(type, expression, name, memberName)
 			{
-				if (host == null || !host.Any())
+				if (string.IsNullOrWhiteSpace(host))
 				{
 					throw new ArgumentNullException(nameof(host));
 				}

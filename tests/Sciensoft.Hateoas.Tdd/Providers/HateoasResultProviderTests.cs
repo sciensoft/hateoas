@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using Moq;
 using Newtonsoft.Json.Linq;
+using Sciensoft.Hateoas.Constants;
 using Sciensoft.Hateoas.Providers;
 using Sciensoft.Hateoas.Repositories;
 using Sciensoft.Hateoas.WebSample;
+using Sciensoft.Hateoas.WebSample.Controllers;
 using Sciensoft.Hateoas.WebSample.Models;
 using System;
 using System.Collections.Generic;
@@ -25,12 +27,12 @@ using Xunit;
 
 namespace Sciensoft.Hateoas.Tdd.Providers
 {
-	public class HateoasRouteUriProviderTests
+	public class HateoasResultProviderTests
 	{
 		private readonly TestServer _server;
 		private readonly HttpClient _client;
 
-		public HateoasRouteUriProviderTests()
+		public HateoasResultProviderTests()
 		{
 			var host = new HostBuilder()
 				.ConfigureWebHost(hostBuilder =>
@@ -47,6 +49,14 @@ namespace Sciensoft.Hateoas.Tdd.Providers
 			_client = _server.CreateClient();
 		}
 
+		public class LinkViewModel
+		{
+			public string Method { get; set; }
+			public string Uri { get; set; }
+			public string Relation { get; set; }
+			public string Message { get; set; }
+		}
+
 		[Fact]
 		public async Task HateoasRouteUriProvider_Should_GenerateLinks_BasedOnRequestEndpoint()
 		{
@@ -61,6 +71,48 @@ namespace Sciensoft.Hateoas.Tdd.Providers
 			// Assert
 			request.StatusCode.Should().Be(HttpStatusCode.OK);
 			links.Should().HaveCountGreaterThan(0);
+		}
+
+		[Fact]
+		public async Task HateoasRouteUriProvider_Should_GenerateSelfLink_BasedOnRequestEndpoint()
+		{
+			// Arrange
+			string bookId = "83389205-B1C9-4523-A3BB-85D7255546F9";
+
+			// Act
+			var request = await _client.GetAsync($"api/books/{bookId}");
+			var jsonPayload = JObject.Parse(await request.Content.ReadAsStringAsync());
+			var links = jsonPayload?.SelectToken("links")?.Children().Select(jo => jo.ToObject<LinkViewModel>());
+
+			// Assert
+			request.StatusCode.Should().Be(HttpStatusCode.OK);
+			links.Should().NotBeNull();
+			links.Should().HaveCountGreaterThan(0);
+			links.Single(l => l.Relation.Equals(PolicyConstants.Self) && l.Method.Equals(HttpMethods.Get)).Should().NotBeNull();
+		}
+
+		[Fact]
+		public async Task HateoasRouteUriProvider_Should_GenerateRouteLinks_BasedOnRequestEndpoint()
+		{
+			// Arrange
+			string bookId = "83389205-B1C9-4523-A3BB-85D7255546F9";
+			var routePolicies = InMemoryPolicyRepository.InMemoryPolicies
+				.Where(p => p is InMemoryPolicyRepository.RoutePolicy)
+				.Where(p => p.Name.Equals(BookController.UpdateBookById) 
+					|| p.Name.Equals(BookController.DeleteBookById))
+				.ToList();
+
+			// Act
+			var request = await _client.GetAsync($"api/books/{bookId}");
+			var jsonPayload = JObject.Parse(await request.Content.ReadAsStringAsync());
+			var links = jsonPayload?.SelectToken("links")?.Children()
+				.Select(jo => jo.ToObject<LinkViewModel>())
+				.Where(m => routePolicies.Any(p => p.Name.Equals(m.Relation)));
+
+			// Assert
+			request.StatusCode.Should().Be(HttpStatusCode.OK);
+			links.Should().NotBeNull();
+			links.Should().HaveCountGreaterThan(1);
 		}
 
 		[Fact(Skip = "Not applicable!")]
@@ -84,8 +136,7 @@ namespace Sciensoft.Hateoas.Tdd.Providers
 			actionDescriptor.RouteValues = new Dictionary<string, string>
 			{
 				{ "action", "Get" },
-				{ "controller", "Books" },
-				//{ "id", itemId.ToString() }
+				{ "controller", "Books" }
 			};
 
 			var helpers = TestHelper.GetHttpContextHelpers("/api/book", actionDescriptor.RouteValues.ToDictionary(x => x.Key, x => (object)x.Value));
