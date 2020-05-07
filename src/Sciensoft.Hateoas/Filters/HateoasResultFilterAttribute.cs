@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Sciensoft.Hateoas.Providers;
@@ -44,7 +43,7 @@ namespace Sciensoft.Hateoas.Filters
 
 						foreach (var policy in policies.Where(p => p != null))
 						{
-							var lambdaResult = GetLambdaResult(policy.Expression, result.Value, policy.Type);
+							var lambdaResult = GetLambdaResult(policy.Expression, result.Value);
 							await _resultProvider.AddPolicyResultAsync(policy, lambdaResult).ConfigureAwait(false);
 						}
 
@@ -54,37 +53,26 @@ namespace Sciensoft.Hateoas.Filters
 			}
 			catch (Exception ex)
 			{
-				_logger.LogWarning(ex, "Something went wrong while processing the link generation.");
+				_logger.LogWarning(ex, "Something went wrong while processing link generation.");
 			}
 
 			await base.OnResultExecutionAsync(context, next).ConfigureAwait(false);
 		}
 
-		private object GetLambdaResult(Expression expression, object sourcePayload, Type targetPayloadType)
+		private object GetLambdaResult(Expression expression, object sourcePayload)
 		{
 			var lambdaExpression = (expression as LambdaExpression);
 
 			if (lambdaExpression == null)
 				return null;
 
-			var parameter = lambdaExpression.Parameters[0];
 			var body = lambdaExpression.Body;
+			var parameter = lambdaExpression.Parameters[0];
 
-			var targetPayload = Activator.CreateInstance(targetPayloadType);
-
-			var mapperConfig = new MapperConfiguration(config =>
-			{
-				config.CreateMap(sourcePayload.GetType(), targetPayloadType);
-			});
-
-			mapperConfig
-				.CreateMapper()
-				.Map(sourcePayload, targetPayload);
-
-			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(targetPayload);
+			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(sourcePayload);
 		}
 
-		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(IList<InMemoryPolicyRepository.Policy> policies, ObjectResult result)
+		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(IEnumerable<InMemoryPolicyRepository.Policy> policies, ObjectResult result)
 			=> policies.Where(p => p.Type == result.DeclaredType || p.Type == result.Value.GetType()).ToList();
 	}
 }

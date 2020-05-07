@@ -29,7 +29,9 @@ namespace Sciensoft.Hateoas.WebSample
 								.AddRoute(m => m.Id, BookController.UpdateBookById)
 								.AddRoute(m => m.Id, BookController.DeleteBookById)
 								.AddCustomPath(m => m.Id, "Edit", method: HttpMethods.Post, message: "Edits resource")
-								.AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.");
+								.AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.")
+								.AddExternalUri(m => m.Id, "https://my-domain.com/api/books/", "Custom Domain External Link")
+								.AddExternalUri(m => $"/search?q={m.Title}", "https://google.com", "Google Search External Links", message: "This will do a search on Google engine.");
 						});
 
 					builder
@@ -47,7 +49,9 @@ namespace Sciensoft.Hateoas.WebSample
 							model
 								.AddSelf(m => m.Id, "Self link.")
 								.AddRoute(m => m.Id, AuthorsController.UpdateAuthorById)
-								.AddCustomPath(m => $"/api/[controller]", "List All", method: HttpMethods.Post);
+								.AddCustomPath(m => $"/api/[controller]", "List All", method: HttpMethods.Post)
+								.AddExternalUri(m => m.Id, "https://my-domain.com/api/authors", "Custom Domain External Link")
+								.AddExternalUri(m => $"/search?q={m.FirstName} {m.LastName}", "https://google.com", "Google Search External Links", message: "This will do a search on Google.");
 						});
 				});
 		}
@@ -72,7 +76,7 @@ namespace Sciensoft.Hateoas.WebSample
 				.UseEndpoints(builder =>
 				{
 					builder.MapControllers();
-					builder.MapControllerRoute("authors", "api/{controller=Authors}/{action=Get}/{id?}");
+					builder.MapControllerRoute("authors", "api/{controller}/{action}/{id?}");
 				});
 		}
 	}

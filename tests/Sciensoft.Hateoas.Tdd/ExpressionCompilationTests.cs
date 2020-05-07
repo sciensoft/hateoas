@@ -1,4 +1,3 @@
-using AutoMapper;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using Sciensoft.Hateoas.WebSample.Models;
@@ -32,10 +31,10 @@ namespace Sciensoft.Hateoas.Tdd
 		}
 
 		[Theory]
-		[InlineData(typeof(BookViewModel), "F52813B6-346C-11E9-874F-0A27172E52BC")]
-		[InlineData(typeof(BookViewModel), "F528191A-346C-11E9-874F-0A27172E52BC")]
-		[InlineData(typeof(BookViewModel), "F5281D16-346C-11E9-874F-0A27172E52BC")]
-		public void MethodCallExpression_Should_CompileAndReturnResults_ForReflectedTypes(Type argumentType, string argumentIdValue)
+		[InlineData("F52813B6-346C-11E9-874F-0A27172E52BC")]
+		[InlineData("F528191A-346C-11E9-874F-0A27172E52BC")]
+		[InlineData("F5281D16-346C-11E9-874F-0A27172E52BC")]
+		public void MethodCallExpression_Should_CompileAndReturnResults_ForReflectedTypes(string argumentIdValue)
 		{
 			// Arrange
 			Expression<Func<BookViewModel, string>> expression = r => $"/api/resource/{r.Id}";
@@ -43,26 +42,14 @@ namespace Sciensoft.Hateoas.Tdd
 			var parameter = expression.Parameters[0];
 			var body = expression.Body as MethodCallExpression;
 
-			var sourceArgument = new
+			var sourcePayload = new BookViewModel
 			{
-				Name = argumentIdValue,
+				Title = argumentIdValue,
 				Id = Guid.Parse(argumentIdValue)
 			};
 
-			var targetArgument = Activator.CreateInstance(argumentType);
-
-			var mapperConfig = new MapperConfiguration(config =>
-			{
-				//config.CreateMissingTypeMaps = true;
-				config.CreateMap(sourceArgument.GetType(), targetArgument.GetType());
-			});
-
-			mapperConfig
-				.CreateMapper()
-				.Map(sourceArgument, targetArgument);
-
 			// Act
-			var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(targetArgument);
+			var results = Expression.Lambda(body, parameter).Compile().DynamicInvoke(sourcePayload);
 
 			// Assert
 			results.Should().NotBeNull();
@@ -149,39 +136,29 @@ namespace Sciensoft.Hateoas.Tdd
 		}
 
 		[Theory]
-		[InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
-		[InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
-		[InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
-		[InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC", typeof(BookViewModel))]
-		public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingObjectAndReturningString(string uuid, Type objectType)
+		[InlineData("2B9AB500-347E-11E9-91FB-0A27172E52BC")]
+		[InlineData("2B9ABB22-347E-11E9-91FB-0A27172E52BC")]
+		[InlineData("2B9ABF50-347E-11E9-91FB-0A27172E52BC")]
+		[InlineData("2B9AC39C-347E-11E9-91FB-0A27172E52BC")]
+		public void ExpressionAsObject_Should_CompiledAndExecuted_ReceivingObjectAndReturningString(string uuid)
 		{
 			// Arrange
-			var anonymousViewModel = new { Id = Guid.Parse(uuid) };
-			var strongTypeViewModel = Activator.CreateInstance(objectType);
-
-			var mapperConfig = new MapperConfiguration(config =>
-			{
-				config.CreateMap(anonymousViewModel.GetType(), objectType);
-			});
-
-			var viewModel = mapperConfig.CreateMapper()
-				.Map(anonymousViewModel, strongTypeViewModel);
-
+			var sourcePayload = new { Id = Guid.Parse(uuid) };
+			
 			Expression<Func<BookViewModel, string>> expression = model => $"/api/numbers/{model.Id}";
 
 			var arguments = (expression.Body as MethodCallExpression).Arguments;
 
-			// TODO : Create method to extract ConstantExpression Value -> "/api/numbers/{0}"
 			string constReturn = (arguments.FirstOrDefault(a => a is ConstantExpression) as ConstantExpression).Value.ToString();
 
 			var operandValues = new List<string>();
-			foreach (UnaryExpression args in arguments.Where(a => a is UnaryExpression))
+			foreach (var args in arguments.Where(a => a is UnaryExpression).Cast<UnaryExpression>())
 			{
 				var operand = args.Operand.ToString();
 				var operandMembers = operand.Split('.');
 				var operandForBinding = operandMembers.Last();
 
-				operandValues.Add(JObject.FromObject(viewModel).GetValue(operandForBinding).ToString());
+				operandValues.Add(JObject.FromObject(sourcePayload).GetValue(operandForBinding).ToString());
 			}
 
 			// Act

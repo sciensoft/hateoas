@@ -29,6 +29,7 @@ namespace Sciensoft.Hateoas.Extensions
 			services.AddTransient<HateoasUriProvider<InMemoryPolicyRepository.SelfPolicy>, HateoasSelfUriProvider>();
 			services.AddTransient<HateoasUriProvider<InMemoryPolicyRepository.RoutePolicy>, HateoasRouteUriProvider>();
 			services.AddTransient<HateoasUriProvider<InMemoryPolicyRepository.CustomPolicy>, HateoasCustomUriProvider>();
+			services.AddTransient<HateoasUriProvider<InMemoryPolicyRepository.ExternalPolicy>, HateoasExternalUriProvider>();
 
 			services.AddTransient<IHateoasResultProvider, HateoasResultProvider>();
 

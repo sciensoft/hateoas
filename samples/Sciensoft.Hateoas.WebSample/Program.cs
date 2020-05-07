@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.WebSample

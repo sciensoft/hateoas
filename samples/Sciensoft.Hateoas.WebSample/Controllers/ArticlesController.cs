@@ -16,12 +16,12 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 
 		[HttpGet]
 		public ActionResult<IEnumerable<ArticleViewModel>> List()
-			=> Ok(InMemoryArticlesCollection.Articles.Select(b => b.Value));
+			=> Ok(InMemoryArticleCollection.Articles.Select(b => b.Value));
 
 		[HttpGet("{id:guid}")]
 		public ActionResult<ArticleViewModel> Get(Guid id)
 		{
-			var model = InMemoryArticlesCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
+			var model = InMemoryArticleCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
 
 			if (model.Value == null)
 			{
@@ -36,7 +36,7 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 		{
 			Debug.Assert(article != null);
 
-			if (!InMemoryArticlesCollection.Articles.TryAdd(article.Id, article))
+			if (!InMemoryArticleCollection.Articles.TryAdd(article.Id, article))
 			{
 				throw new InvalidOperationException($"Article with Id '{article.Id}' already exists. Try PUT operation to update the item.");
 			}
@@ -50,16 +50,16 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 			Debug.Assert(article != null);
 
 			article.Id = id;
-			var model = InMemoryArticlesCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
+			var model = InMemoryArticleCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
 
 			if (model.Value == null)
 			{
 				return NotFound(id);
 			}
 
-			if (!InMemoryArticlesCollection.Articles.TryAdd(id, article))
+			if (!InMemoryArticleCollection.Articles.TryAdd(id, article))
 			{
-				InMemoryArticlesCollection.Articles[id] = article;
+				InMemoryArticleCollection.Articles[id] = article;
 			}
 
 			return CreatedAtAction(nameof(Get), id);
@@ -68,14 +68,14 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 		[HttpDelete("{id:guid}", Name = DeleteArticleById)]
 		public IActionResult Delte(Guid id)
 		{
-			var model = InMemoryArticlesCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
+			var model = InMemoryArticleCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
 
 			if (model.Value == null)
 			{
 				return NotFound();
 			}
 
-			InMemoryArticlesCollection.Articles.Remove(id);
+			InMemoryArticleCollection.Articles.Remove(id);
 
 			return Ok();
 		}
