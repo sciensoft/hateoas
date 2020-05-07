@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Sciensoft.Hateoas.WebSample.Repositories
 {
-	internal static class InMemoryAuthorsCollection
+	internal static class InMemoryAuthorCollection
 	{
 		public static readonly IDictionary<Guid, AuthorViewModel> Authors = (new List<AuthorViewModel> {
 			new AuthorViewModel {

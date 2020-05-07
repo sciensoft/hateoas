@@ -13,12 +13,16 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 		public const string UpdateAuthorById = nameof(UpdateAuthorById);
 
 		[HttpGet]
+		public ActionResult<IEnumerable<ArticleViewModel>> List()
+			=> Ok(InMemoryAuthorCollection.Authors.Select(b => b.Value));
+
+		[HttpGet]
 		public IEnumerable<AuthorViewModel> Get()
-			=> InMemoryAuthorsCollection.Authors.Select(a => a.Value);
+			=> InMemoryAuthorCollection.Authors.Select(a => a.Value);
 
 		[HttpGet]
 		public AuthorViewModel GetById(Guid id)
-			=> InMemoryAuthorsCollection.Authors.FirstOrDefault(a => a.Key.Equals(id)).Value;
+			=> InMemoryAuthorCollection.Authors.FirstOrDefault(a => a.Key.Equals(id)).Value;
 
 		[HttpPut(Name = UpdateAuthorById)]
 		public IActionResult Put(Guid id, [FromBody] AuthorViewModel author)
@@ -26,16 +30,16 @@ namespace Sciensoft.Hateoas.WebSample.Controllers
 			Debug.Assert(author != null);
 
 			author.Id = id;
-			var model = InMemoryArticlesCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
+			var model = InMemoryArticleCollection.Articles.FirstOrDefault(x => x.Key.Equals(id));
 
 			if (model.Value == null)
 			{
 				return NotFound(id);
 			}
 
-			if (!InMemoryAuthorsCollection.Authors.TryAdd(id, author))
+			if (!InMemoryAuthorCollection.Authors.TryAdd(id, author))
 			{
-				InMemoryAuthorsCollection.Authors[id] = author;
+				InMemoryAuthorCollection.Authors[id] = author;
 			}
 
 			return CreatedAtAction(nameof(Get), id);

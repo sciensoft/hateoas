@@ -1,26 +1,31 @@
 # Sciensoft.Hateoas
 
 ![Sciensoft.Hateoas Build Status](https://dev.azure.com/Sciensoft/Sciensoft/_apis/build/status/Sciensoft.Hateoas?branchName=master)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Sciensoft.Hateoas&metric=alert_status)](https://sonarcloud.io/dashboard?id=Sciensoft.Hateoas)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Sciensoft.Hateoas&metric=security_rating)](https://sonarcloud.io/dashboard?id=Sciensoft.Hateoas)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Sciensoft.Hateoas&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=Sciensoft.Hateoas)
 
-A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core WebApi apps. It's based on REST application architecture style **Uniform Interface** constraint _hypermedia as the engine of application state (HATEOAS)_.
+A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core RESTful/Web APIs. Based on the REST application architecture style, Uniform Interface, constraint **Hypermedia As The Engine Of Application State (HATEOAS)**.
 
-**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with `Sciensoft.Hateoas`**.
+**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. They all come beautifully out of the box with `Sciensoft.Hateoas`**.
 
-Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce <a href="https://medium.com/extend/what-is-rest-a-simple-explanation-for-beginners-part-2-rest-constraints-129a4b69a582" target="_blank">REST constraints</a> or <a href="https://martinfowler.com/articles/richardsonMaturityModel.html" target="_blank">Richardson Maturity Level</a> and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
+Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT enforce <a href="https://rebrand.ly/restful-explained" target="_blank">REST constraints</a> or <a href="https://rebrand.ly/richardson-maturity-model" target="_blank">Richardson Maturity Level</a>, and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
 
-Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/lambda-expressions" target="_blank">here</a>.
+Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://rebrand.ly/dotnet-lambda-expressions" target="_blank">here</a>.
 
 ## Get Started
 
-Sciensoft.Hateoas can be installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager or `dotnet` CLI.
+Sciensoft.Hateoas gets installed using <a href="https://www.nuget.org/packages/Sciensoft.Hateoas/" target="_blank">Nuget</a> package manager.
 
 ```bash
 Install-Package Sciensoft.Hateoas
 ```
 
+Or dotnet CLI `dotnet add package Sciensoft.Hateoas`.
+
 ### Configuration
 
-Using a fluent language, it can be configured easily adding the service to .NET dependency inversion pipeline.
+Using a fluent language, allows you to easily configure by adding the service to .NET Core dependency injection pipeline.
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -37,14 +42,15 @@ public void ConfigureServices(IServiceCollection services)
             .AddRoute(m => m.Id, BookController.UpdateBookById)
             .AddRoute(m => m.Id, BookController.DeleteBookById)
             .AddCustomPath(m => m.Id, "Edit", method: HttpMethods.Post, message: "Edits resource")
-            .AddCustomPath(m => $"/change/other/path/?id={m.Id}", "CustomLink1", method: HttpMethods.Post, message: "Any operation in your resource.")
-            .AddCustomPath(m => $"other/path/?author={m.Author}", "CustomLink2", method: HttpMethods.Put, message: "Any operation in your resource.");
+            .AddCustomPath(m => $"/change/resource/state/?id={m.Id}", "ChangeResourceState", method: HttpMethods.Post, message: "Any operation in your resource.")
+            .AddExternalUri(m => m.Id, "https://my-domain.com/api/books/", "Custom Domain External Link")
+            .AddExternalUri(m => $"/search?q={m.Title}", "https://google.com", "Google Search External Links", message: "This will do a search on Google engine.");
         });
     });
 }
 ```
 
-Here is how your constroller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out!
+Here is how your controller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out!
 
 ```csharp
 [Route("api/books")]
@@ -75,7 +81,7 @@ public class BookController : ControllerBase
 }
 ```
 
-**Json Result:**
+**JSON Result:**
 
 ```json
 {
@@ -92,33 +98,45 @@ public class BookController : ControllerBase
     "links": [
         {
             "method": "GET",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "Self"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "Self",
+            "message": "This is a GET self link."
         },
         {
             "method": "PUT",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "UpdateBookById"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "UpdateBookById",
+            "message": null
         },
         {
             "method": "DELETE",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "DeleteBookById"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "DeleteBookById",
+            "message": null
         },
         {
             "method": "POST",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "Edit"
+            "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "Edit",
+            "message": "Edits resource"
         },
         {
             "method": "POST",
-            "uri": "http://your-domain.io/change/other/path/%3fid=8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-            "relation": "CustomLink1"
+            "uri": "http://localhost:6080/change/resource/state/%3fid=83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "ChangeResourceState",
+            "message": "Any operation in your resource."
         },
         {
-            "method": "PUT",
-            "uri": "http://your-domain.io/api/books/8f46d29e-6c0d-4511-85e7-b1d7ae42934a/other/path/%3fauthor=Christopher Greyson",
-            "relation": "CustomLink2"
+            "method": "GET",
+            "uri": "https://my-domain.com/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
+            "relation": "Custom Domain External Link",
+            "message": null
+        },
+        {
+            "method": "GET",
+            "uri": "https://google.com/search?q=The Girl Beneath the Sea (Underwater Investigation Unit Book 1)",
+            "relation": "Google Search External Links",
+            "message": "This will do a search on Google engine."
         }
     ]
 }
@@ -126,28 +144,28 @@ public class BookController : ControllerBase
 
 ## Features
 
-- Self link link generation
-- Named Route link generation
-- Custom link generation with support to path override
-- Configuration with Lambda Expression
-- Attribute Routing support
-- Conventional Routing support
+- Self-link generation,
+- Named Route link generation,
+- Custom link generation with support to path override,
+- External links configuration,
+- Configuration with Lambda Expression,
+- Attribute Routing support, and
+- Conventional Routing support.
 
 ### Roadmap
 
-- Add support to extending link generation
-- Add support to external links configuration
-- Add support to bypass model link generation
-- Add support to .NET Authorization
-- Add support to Content Negotiation type in the read-model
+- Add support for extending link generation.
+- Add support to bypass model link generation.
+- Add support to .NET Authorization.
+- Add support to Content Negotiation type in the read-model.
 
 ## Contributions
 
-Before start contributing, check our [CONTRIBUTING] guideline out, also, before doing a major change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
+Before start contributing, check our [CONTRIBUTING] guideline out, also, before doing any significant change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
 
 ## Issues
 
-To open an issue or even suggest a feature, please use the [Issues] tab.
+To open an issue or even suggest a new feature, please use the [Issues] tab.
 
 ## License
 
@@ -164,4 +182,4 @@ You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-
 [Richardson-Maturity-Level]:https://martinfowler.com/articles/richardsonMaturityModel.html
 [REST-Constraints]:https://medium.com/extend/what-is-rest-a-simple-explanation-for-beginners-part-2-rest-constraints-129a4b69a582
 [CONTRIBUTING]: ./CONTRIBUTING.md
-[Issues]: ./../../issues
+[Issues]: ./../../../issues

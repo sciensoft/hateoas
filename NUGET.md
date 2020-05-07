@@ -1,12 +1,12 @@
-![Build](https://higtrollers.visualstudio.com/Sciensoft/_apis/build/status/SDK/Sciensoft.Hateoas)
+![Sciensoft.Hateoas Build Status](https://dev.azure.com/Sciensoft/Sciensoft/_apis/build/status/Sciensoft.Hateoas?branchName=master)
 
-A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core WebApi apps. It's based on REST application architecture style **Uniform Interface** constraint _hypermedia as the engine of application state (HATEOAS)_.
+A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core RESTful/Web APIs. Based on the REST application architecture style, Uniform Interface, constraint **Hypermedia As The Engine Of Application State (HATEOAS)**.
 
-**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. It all come beautifully out of the box with `Sciensoft.Hateoas`**.
+**The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. They all come beautifully out of the box with `Sciensoft.Hateoas`**.
 
-Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT inforce [REST constraints][REST-Constraints] or [Richardson Maturity Level][Richardson-Maturity-Level] and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
+Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT enforce <a href="https://rebrand.ly/restful-explained" target="_blank">REST constraints</a> or <a href="https://rebrand.ly/richardson-maturity-model" target="_blank">Richardson Maturity Level</a>, and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
 
-Learn more about RESTful API [here][Learn-RestfulApi] and Lambda Expressions [here][Lambda-Expressions].
+Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://rebrand.ly/dotnet-lambda-expressions" target="_blank">here</a>.
 
 Learn more at [Sciensoft.Hateoas](https://github.com/higtrollers/Sciensoft.Hateoas)!
 
