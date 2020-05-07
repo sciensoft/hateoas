@@ -1,6 +1,9 @@
 # Sciensoft.Hateoas
 
 ![Sciensoft.Hateoas Build Status](https://dev.azure.com/Sciensoft/Sciensoft/_apis/build/status/Sciensoft.Hateoas?branchName=master)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Sciensoft.Hateoas&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Sciensoft.Hateoas)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Sciensoft.Hateoas&metric=security_rating)](https://sonarcloud.io/dashboard?id=Sciensoft.Hateoas)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Sciensoft.Hateoas&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=Sciensoft.Hateoas)
 
 A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core RESTful/Web APIs. Based on the REST application architecture style, Uniform Interface, constraint **Hypermedia As The Engine Of Application State (HATEOAS)**.
 

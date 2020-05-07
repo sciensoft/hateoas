@@ -72,7 +72,7 @@ namespace Sciensoft.Hateoas.Filters
 			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(sourcePayload);
 		}
 
-		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(IList<InMemoryPolicyRepository.Policy> policies, ObjectResult result)
+		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(IEnumerable<InMemoryPolicyRepository.Policy> policies, ObjectResult result)
 			=> policies.Where(p => p.Type == result.DeclaredType || p.Type == result.Value.GetType()).ToList();
 	}
 }

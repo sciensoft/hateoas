@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -14,7 +14,7 @@ namespace Sciensoft.Hateoas.Repositories
 		/// <summary>
 		/// List of registered policies.
 		/// </summary>
-		public static IList<Policy> InMemoryPolicies { get; } = new List<Policy>();
+		public static ConcurrentBag<Policy> InMemoryPolicies { get; } = new ConcurrentBag<Policy>();
 
 		/// <summary>
 		/// Abstract policy for link generation

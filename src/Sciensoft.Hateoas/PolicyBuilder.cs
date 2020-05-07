@@ -44,7 +44,7 @@ namespace Sciensoft.Hateoas
 		{
 			if (string.IsNullOrWhiteSpace(routeName))
 			{
-				throw new InvalidPolicyConfigurationException($"Routed policy requires '{nameof(routeName)}'.");
+				throw new InvalidPolicyConfigurationException($"Routed policy requires '{nameof(routeName)}' argument.");
 			}
 
 			InMemoryPolicyRepository.InMemoryPolicies.Add(
@@ -72,7 +72,7 @@ namespace Sciensoft.Hateoas
 		{
 			if (string.IsNullOrWhiteSpace(linkKey))
 			{
-				throw new InvalidPolicyConfigurationException($"Custom Policy requires '{nameof(linkKey)}'.");
+				throw new InvalidPolicyConfigurationException($"Custom Policy requires '{nameof(linkKey)}' argument.");
 			}
 
 			InMemoryPolicyRepository.InMemoryPolicies.Add(
@@ -92,20 +92,25 @@ namespace Sciensoft.Hateoas
 		/// It's possible to use tokens E.g. [controller], [action], [your-own] to match and replace by the route values.
 		/// </remarks>
 		/// <param name="expression">An expression for link generation, e.g. <code>l => $"https://my-external-uri.com/api/resource/{l.Id}"</code>.</param>
-		/// <param name="hosts">List of external hosts for link generation.</param>
+		/// <param name="host">List of external hosts for link generation.</param>
 		/// <param name="linkKey">Link identifier.</param>
 		/// <param name="method">Resource method as per HTTP methods, e.g. GET/HEAD/POST, visit <inheritdoc path="https://tools.ietf.org/html/rfc7231#section-4"/> for more information.</param>
 		/// <param name="message">A descriptive message for the link.</param>
 		/// <returns><see cref="PolicyBuilder{T}"/> with configured policies.</returns>
-		public PolicyBuilder<T> AddExternalUri(Expression<Func<T, object>> expression, string hosts, string linkKey, string method = null, string message = null)
+		public PolicyBuilder<T> AddExternalUri(Expression<Func<T, object>> expression, string host, string linkKey, string method = null, string message = null)
 		{
+			if (string.IsNullOrWhiteSpace(host))
+			{
+				throw new InvalidPolicyConfigurationException($"External Policy requires '{nameof(host)}' argument.");
+			}
+
 			if (string.IsNullOrWhiteSpace(linkKey))
 			{
-				throw new InvalidPolicyConfigurationException($"Custom Policy requires '{nameof(linkKey)}'.");
+				throw new InvalidPolicyConfigurationException($"External Policy requires '{nameof(linkKey)}' argument.");
 			}
 
 			InMemoryPolicyRepository.InMemoryPolicies.Add(
-				new InMemoryPolicyRepository.ExternalPolicy(typeof(T), expression, hosts, linkKey)
+				new InMemoryPolicyRepository.ExternalPolicy(typeof(T), expression, host, linkKey)
 				{
 					Method = method ?? HttpMethods.Get,
 					Message = message
