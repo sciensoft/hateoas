@@ -16,7 +16,7 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<RepositoryUrl>https://github.com/higtrollers/Sciensoft.Hateoas</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/higtrollers/Sciensoft.Hateoas</PackageProjectUrl>
-		<PackageIconUrl>https://github.com/higtrollers/Sciensoft.Hateoas/blob/release/3.1.0/.github/sciensoft.logo.icon.jpg</PackageIconUrl>
+		<PackageIconUrl>https://github.com/higtrollers/Sciensoft.Hateoas/blob/release/3.1.0/.github/sciensoft.logo.64x64.jpg</PackageIconUrl>
 		<PackageTags>restfulapi;hateoas</PackageTags>
 		<OutputType>Library</OutputType>
 	</PropertyGroup>
