@@ -2,11 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Sciensoft.Hateoas.Providers;
-using Sciensoft.Hateoas.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -34,20 +30,10 @@ namespace Sciensoft.Hateoas.Filters
 			{
 				if (context.Result is ObjectResult result)
 				{
-					var policies = GetFilteredPolicies(InMemoryPolicyRepository.InMemoryPolicies, result);
-
-					var resultType = result.Value.GetType();
-					if (policies.Any() && !(typeof(IEnumerable<object>)).IsAssignableFrom(resultType))
+					var finalResult = await _resultProvider.GetContentResultAsync(result).ConfigureAwait(false);
+					if (finalResult != null)
 					{
-						var rawJson = JsonSerializer.Serialize(result.Value, _jsonOptions);
-
-						foreach (var policy in policies.Where(p => p != null))
-						{
-							var lambdaResult = GetLambdaResult(policy.Expression, result.Value);
-							await _resultProvider.AddPolicyResultAsync(policy, lambdaResult).ConfigureAwait(false);
-						}
-
-						context.Result = await _resultProvider.GetContentResultAsync(rawJson).ConfigureAwait(false);
+						context.Result = finalResult;
 					}
 				}
 			}
@@ -58,21 +44,5 @@ namespace Sciensoft.Hateoas.Filters
 
 			await base.OnResultExecutionAsync(context, next).ConfigureAwait(false);
 		}
-
-		private object GetLambdaResult(Expression expression, object sourcePayload)
-		{
-			var lambdaExpression = (expression as LambdaExpression);
-
-			if (lambdaExpression == null)
-				return null;
-
-			var body = lambdaExpression.Body;
-			var parameter = lambdaExpression.Parameters[0];
-
-			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(sourcePayload);
-		}
-
-		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(IEnumerable<InMemoryPolicyRepository.Policy> policies, ObjectResult result)
-			=> policies.Where(p => p.Type == result.DeclaredType || p.Type == result.Value.GetType()).ToList();
 	}
 }

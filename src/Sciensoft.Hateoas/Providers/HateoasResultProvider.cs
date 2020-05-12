@@ -2,6 +2,8 @@
 using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -12,6 +14,8 @@ namespace Sciensoft.Hateoas.Providers
 	{
 		private readonly IServiceProvider _serviceProvider;
 		private readonly JsonSerializerOptions _jsonOptions;
+
+		private readonly IList<object> _links = new List<object>();
 
 		public HateoasResultProvider(
 			IServiceProvider serviceProvider,
@@ -24,9 +28,33 @@ namespace Sciensoft.Hateoas.Providers
 			};
 		}
 
-		public IList<object> Links { get; } = new List<object>();
+		public async Task<IActionResult> GetContentResultAsync(ObjectResult result)
+		{
+			var policies = GetFilteredPolicies(result);
+			var resultType = result.Value.GetType();
 
-		public async Task AddPolicyResultAsync(InMemoryPolicyRepository.Policy policy, object result)
+			if (!policies.Any() && (typeof(IEnumerable<object>)).IsAssignableFrom(resultType))
+			{
+				return null;
+			}
+
+			foreach (var policy in policies.Where(p => p != null))
+			{
+				var lambdaResult = GetLambdaResult(policy.Expression, result.Value);
+				await AddPolicyResultAsync(policy, lambdaResult).ConfigureAwait(false);
+			}
+
+			// TODO : Remove this serialization and Use JsonDocument Parse
+			var rawJson = JsonSerializer.Serialize(result.Value, _jsonOptions);
+			var finalPayload = JsonSerializer.Deserialize<Dictionary<string, object>>(rawJson, _jsonOptions);
+			finalPayload.Add("links", _links);
+
+			var content = new JsonResult(finalPayload);
+
+			return await Task.FromResult(content).ConfigureAwait(false);
+		}
+
+		private async Task AddPolicyResultAsync(InMemoryPolicyRepository.Policy policy, object result)
 		{
 			var uriProviderType = typeof(HateoasUriProvider<>).MakeGenericType(policy.GetType());
 			var uriProvider = _serviceProvider.GetService(uriProviderType);
@@ -39,7 +67,7 @@ namespace Sciensoft.Hateoas.Providers
 					uriProvider,
 					new[] { policy, result });
 
-			Links.Add(new
+			_links.Add(new
 			{
 				Method = endpoint.Item1,
 				Uri = endpoint.Item2,
@@ -50,25 +78,20 @@ namespace Sciensoft.Hateoas.Providers
 			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
-		public async Task<IActionResult> GetContentResultAsync(string rawPayload)
+		private object GetLambdaResult(Expression expression, object sourcePayload)
 		{
-			var finalPayload = JsonSerializer.Deserialize<Dictionary<string, object>>(rawPayload, _jsonOptions);
-			finalPayload.Add("links", Links);
+			var lambdaExpression = (expression as LambdaExpression);
 
-			var content = new JsonResult(finalPayload)
-			{
-				// TODO : Add support to Content Negotiation Content-Type
-				//ContentType = "application/hateoas+json"
-			};
+			if (lambdaExpression == null)
+				return null;
 
-			return await Task.FromResult(content).ConfigureAwait(false);
+			var body = lambdaExpression.Body;
+			var parameter = lambdaExpression.Parameters[0];
+
+			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(sourcePayload);
 		}
-	}
 
-	internal interface IHateoasResultProvider
-	{
-		Task AddPolicyResultAsync(InMemoryPolicyRepository.Policy policy, object result);
-
-		Task<IActionResult> GetContentResultAsync(string rawPayload);
+		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(ObjectResult result)
+			=> InMemoryPolicyRepository.InMemoryPolicies.Where(p => p.Type == result.DeclaredType || p.Type == result.Value.GetType()).ToList();
 	}
 }

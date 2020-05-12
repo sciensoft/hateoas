@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Sciensoft.Hateoas.Extensions;
 using Sciensoft.Hateoas.WebSample.Controllers;
+using Sciensoft.Hateoas.WebSample.Filters;
 using Sciensoft.Hateoas.WebSample.Models;
 
 namespace Sciensoft.Hateoas.WebSample
@@ -18,7 +19,11 @@ namespace Sciensoft.Hateoas.WebSample
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services
-				.AddControllers()
+				.AddControllers(options =>
+				{
+					options.Filters.Add<ModelTypeResultFilterAttribute>();
+				})
+				//.AddNewtonsoftJson()
 				.AddLink(builder =>
 				{
 					builder

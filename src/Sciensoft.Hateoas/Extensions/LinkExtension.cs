@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Sciensoft.Hateoas.Filters;
 using Sciensoft.Hateoas.Providers;
@@ -33,12 +34,11 @@ namespace Sciensoft.Hateoas.Extensions
 
 			services.AddTransient<IHateoasResultProvider, HateoasResultProvider>();
 
-			services
-				.AddMvcCore(setup =>
-				{
-					setup.Filters.Add<LocationUriResultFilterAttribute>();
-					setup.Filters.Add<HateoasResultFilterAttribute>();
-				});
+			services.Configure<MvcOptions>(options =>
+			{
+				options.Filters.Add<LocationUriResultFilterAttribute>();
+				options.Filters.Add<HateoasResultFilterAttribute>();
+			});
 
 			configure?.Invoke(linkBuilder);
 
