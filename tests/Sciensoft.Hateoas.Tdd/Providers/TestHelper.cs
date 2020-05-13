@@ -1,14 +1,22 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Moq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Sciensoft.Hateoas.Tdd.Providers
 {
 	public static class TestHelper
 	{
-		public static (IHttpContextAccessor ContextAccessor, LinkGenerator LinkGenerator) GetHttpContextHelpers(string path, IDictionary<string, object> routes = null)
+		public static (
+			IHttpContextAccessor ContextAccessor,
+			LinkGenerator LinkGenerator,
+			IActionDescriptorCollectionProvider ActionDescriptor)
+			GetHttpContextHelpers(string path, IDictionary<string, object> routes = null)
 		{
 			/// HttpRequest
 			var httpRequest = new Mock<HttpRequest>();
@@ -47,7 +55,18 @@ namespace Sciensoft.Hateoas.Tdd.Providers
 			/// LinkGenerator
 			var linkGenerator = new Mock<LinkGenerator>();
 
-			return (contextAccessor.Object, linkGenerator.Object);
+			// IActionDescriptorCollectionProvider
+			var actionDescriptor = new Mock<IActionDescriptorCollectionProvider>();
+			actionDescriptor
+				.SetupGet(a => a.ActionDescriptors)
+				.Returns(new ActionDescriptorCollection(new Collection<ActionDescriptor>(new[] {
+					new ActionDescriptor()
+					{
+						RouteValues = routes.ToDictionary(k => k.Key, v => v.Value.ToString())
+					}
+				}), 0));
+
+			return (contextAccessor.Object, linkGenerator.Object, actionDescriptor.Object);
 		}
 	}
 }

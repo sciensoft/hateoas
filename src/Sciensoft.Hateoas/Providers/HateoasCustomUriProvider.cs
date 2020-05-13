@@ -4,6 +4,7 @@ using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Sciensoft.Hateoas.Providers
@@ -37,7 +38,7 @@ namespace Sciensoft.Hateoas.Providers
 
 		private string ExtractTokenFromUrl(string path, IDictionary<string, object> routeValues)
 		{
-			var finalPath = PathString.Empty;
+			var finalPath = new StringBuilder();
 			var regex = new Regex(@"\[(?<token>\w*)\]");
 
 			foreach (string part in path.Split("/", StringSplitOptions.RemoveEmptyEntries))
@@ -50,10 +51,10 @@ namespace Sciensoft.Hateoas.Providers
 					replace = regex.Replace(part, routeValues[token].ToString());
 				}
 
-				finalPath = finalPath.Add($"/{replace}");
+				finalPath = finalPath.Append($"/{replace}");
 			}
 
-			return finalPath;
+			return finalPath.ToString();
 		}
 	}
 }
