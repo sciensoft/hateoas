@@ -8,7 +8,26 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and thi
 
 **Added:**
 
-- Distributed caching for processed links policies
+- Endpoint/Controller policy configuration.
+- Distributed caching for processed links policies.
+
+## [Unreleased - 3.2.0] - 2020-05-13
+
+**Added:**
+
+- Support to `IEnumerable<T>` results with links.
+- Support to [Json.NET](https://www.newtonsoft.com/json/help/html/Introduction.htm) configuration.
+- Support to [System.Text.Json](https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-overview) configuration.
+
+**Changed:**
+
+- Configuration of Policy filters at `LinkExtension.AddLink`.
+- Final payload object generation.
+
+**Fixed:**
+
+- Route values unwanted updates on `HateoasRouteUriProvider`.
+- Self-link for non-compliant Restful routes.
 
 ## [3.1.0] - 2020-05-07
 

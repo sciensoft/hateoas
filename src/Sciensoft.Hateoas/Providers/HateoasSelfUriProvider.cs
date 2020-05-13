@@ -26,7 +26,6 @@ namespace Sciensoft.Hateoas.Providers
 				return (policy.Method, $"{Host}/{finalVirtualPath}");
 			}
 
-			// TODO : Improve link generation
 			string t = GetFormatedPath(policy.Template);
 			string r = GetFormatedPath(result.ToString());
 

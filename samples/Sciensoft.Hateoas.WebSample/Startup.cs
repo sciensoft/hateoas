@@ -23,7 +23,15 @@ namespace Sciensoft.Hateoas.WebSample
 				{
 					options.Filters.Add<ModelTypeResultFilterAttribute>();
 				})
-				//.AddNewtonsoftJson()
+				.AddJsonOptions(options =>
+				{
+					options.JsonSerializerOptions.IgnoreNullValues = true;
+				})
+				//.AddNewtonsoftJson(options =>
+				//{
+				//	options.UseCamelCasing(true);
+				//	options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+				//})
 				.AddLink(builder =>
 				{
 					builder

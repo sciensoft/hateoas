@@ -8,7 +8,7 @@ namespace Sciensoft.Hateoas.WebSample.Filters
 		public override void OnResultExecuting(ResultExecutingContext context)
 		{
 			// For test purpose
-			context.HttpContext.Response.Headers.Add("Model-Type", (context.Result as ObjectResult).DeclaredType.Name);
+			context.HttpContext.Response.Headers.Add("Model-Type", (context.Result as ObjectResult)?.DeclaredType?.Name ?? "Unknown");
 		}
 	}
 }

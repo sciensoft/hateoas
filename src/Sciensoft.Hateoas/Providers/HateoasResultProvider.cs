@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sciensoft.Hateoas.Extensions;
 using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.Json;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.Providers
@@ -13,48 +15,81 @@ namespace Sciensoft.Hateoas.Providers
 	internal class HateoasResultProvider : IHateoasResultProvider
 	{
 		private readonly IServiceProvider _serviceProvider;
-		private readonly JsonSerializerOptions _jsonOptions;
 
-		private readonly IList<object> _links = new List<object>();
+		public HateoasResultProvider(IServiceProvider serviceProvider)
+			=> _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
-		public HateoasResultProvider(
-			IServiceProvider serviceProvider,
-			JsonSerializerOptions jsonOptions = null)
+		public bool HasAnyPolicy(IActionResult actionResult, out ObjectResult objectResult)
 		{
-			_serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-			_jsonOptions = jsonOptions ?? new JsonSerializerOptions
+			if (actionResult is ObjectResult result)
 			{
-				IgnoreNullValues = true
-			};
+				objectResult = actionResult as ObjectResult;
+				string resultType = objectResult.Value.GetType().FullName;
+
+				if (result.Value is IEnumerable<object> collection)
+				{
+					resultType = collection
+						.Select(v => v.GetType().FullName)
+						.Distinct()
+						.Single();
+				}
+
+				return InMemoryPolicyRepository.InMemoryPolicies
+					.Any(p => p.Type.FullName.Equals(resultType));
+			}
+
+			objectResult = default;
+			return false;
 		}
 
 		public async Task<IActionResult> GetContentResultAsync(ObjectResult result)
 		{
 			var policies = GetFilteredPolicies(result);
-			var resultType = result.Value.GetType();
-
-			if (!policies.Any() && (typeof(IEnumerable<object>)).IsAssignableFrom(resultType))
+			if (!policies.Any())
 			{
 				return null;
 			}
 
-			foreach (var policy in policies.Where(p => p != null))
+			var content = default(JsonResult);
+
+			async Task<IList<object>> GetLinksAsync(object item)
 			{
-				var lambdaResult = GetLambdaResult(policy.Expression, result.Value);
-				await AddPolicyResultAsync(policy, lambdaResult).ConfigureAwait(false);
+				var links = new List<object>();
+
+				foreach (var policy in policies.Where(p => p != null))
+				{
+					var lambdaResult = GetLambdaResult(policy.Expression, item);
+					var link = await GetPolicyLinkAsync(policy, lambdaResult).ConfigureAwait(false);
+					links.Add(link);
+				}
+
+				return links;
 			}
 
-			// TODO : Remove this serialization and Use JsonDocument Parse
-			var rawJson = JsonSerializer.Serialize(result.Value, _jsonOptions);
-			var finalPayload = JsonSerializer.Deserialize<Dictionary<string, object>>(rawJson, _jsonOptions);
-			finalPayload.Add("links", _links);
+			async Task<object> GetFinalJsonPayloadAsync(object item)
+			{
+				var links = await GetLinksAsync(item).ConfigureAwait(false);
 
-			var content = new JsonResult(finalPayload);
+				return await Task.FromResult(item.ToFinalPayload(links)).ConfigureAwait(false);
+			}
+
+			if (result.Value is IEnumerable<object> collection)
+			{
+				var links = await Task.WhenAll(collection.Select(item => GetFinalJsonPayloadAsync(item))).ConfigureAwait(false);
+				var json = new List<object>(links);
+
+				content = new JsonResult(json);
+			}
+			else
+			{
+				var links = await GetFinalJsonPayloadAsync(result.Value).ConfigureAwait(false);
+				content = new JsonResult(links);
+			}
 
 			return await Task.FromResult(content).ConfigureAwait(false);
 		}
 
-		private async Task AddPolicyResultAsync(InMemoryPolicyRepository.Policy policy, object result)
+		private async Task<object> GetPolicyLinkAsync(InMemoryPolicyRepository.Policy policy, object model)
 		{
 			var uriProviderType = typeof(HateoasUriProvider<>).MakeGenericType(policy.GetType());
 			var uriProvider = _serviceProvider.GetService(uriProviderType);
@@ -65,17 +100,17 @@ namespace Sciensoft.Hateoas.Providers
 					BindingFlags.InvokeMethod,
 					null,
 					uriProvider,
-					new[] { policy, result });
+					new[] { policy, model });
 
-			_links.Add(new
+			var link = new
 			{
 				Method = endpoint.Item1,
 				Uri = endpoint.Item2,
 				Relation = policy.Name,
 				policy.Message
-			});
+			};
 
-			await Task.CompletedTask.ConfigureAwait(false);
+			return await Task.FromResult(link).ConfigureAwait(false);
 		}
 
 		private object GetLambdaResult(Expression expression, object sourcePayload)
@@ -91,7 +126,21 @@ namespace Sciensoft.Hateoas.Providers
 			return Expression.Lambda(body, parameter).Compile().DynamicInvoke(sourcePayload);
 		}
 
-		private IList<InMemoryPolicyRepository.Policy> GetFilteredPolicies(ObjectResult result)
-			=> InMemoryPolicyRepository.InMemoryPolicies.Where(p => p.Type == result.DeclaredType || p.Type == result.Value.GetType()).ToList();
+		private IEnumerable<InMemoryPolicyRepository.Policy> GetFilteredPolicies(ObjectResult result)
+		{
+			string resultType = result.Value.GetType().FullName;
+
+			if (result.Value is IEnumerable<object> collection)
+			{
+				resultType = collection
+					.Select(v => v.GetType().FullName)
+					.Distinct()
+					.Single();
+			}
+
+			return InMemoryPolicyRepository.InMemoryPolicies
+				.Where(p => p.Type.FullName.Equals(resultType))
+				.AsEnumerable();
+		}
 	}
 }

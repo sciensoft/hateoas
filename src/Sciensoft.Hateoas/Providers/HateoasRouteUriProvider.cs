@@ -53,13 +53,15 @@ namespace Sciensoft.Hateoas.Providers
 						&& ((HttpMethodAttribute)e).Name.Equals(policy.RouteName)));
 			}
 
+			var localRouteValues = routeInfo.RouteValues.ToDictionary(r => r.Key, r => r.Value);
+
 			var expressionMember = (((policy.Expression as LambdaExpression)?.Body as UnaryExpression)?.Operand as MemberExpression)?.Member;
-			routeInfo.RouteValues.TryAdd(expressionMember?.Name, result.ToString());
+			localRouteValues.TryAdd(expressionMember?.Name, result.ToString());
 
 			var httpMethodMetadata = routeInfo.EndpointMetadata.FirstOrDefault(x => x is HttpMethodMetadata) as HttpMethodMetadata;
 			var httpMethod = httpMethodMetadata.HttpMethods.FirstOrDefault();
 
-			string virtualPath = LinkGenerator.GetPathByRouteValues(HttpContext, targetRouteName, routeInfo.RouteValues);
+			string virtualPath = LinkGenerator.GetPathByRouteValues(HttpContext, targetRouteName, localRouteValues);
 			string finalPath = GetFormatedPath($"{virtualPath}");
 
 			return (httpMethod, $"{Host}/{finalPath}");
