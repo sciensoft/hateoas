@@ -17,7 +17,7 @@
 		<RepositoryUrl>https://github.com/higtrollers/Sciensoft.Hateoas</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/higtrollers/Sciensoft.Hateoas</PackageProjectUrl>
 		<PackageIconUrl>https://raw.githubusercontent.com/higtrollers/Sciensoft.Hateoas/master/.github/sciensoft.logo.64x64.jpg</PackageIconUrl>
-		<PackageTags>restfulapi;hateoas</PackageTags>
+		<PackageTags>restfulapi;webapi;hateoas</PackageTags>
 		<OutputType>Library</OutputType>
 	</PropertyGroup>
 
