@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Sciensoft.Hateoas.Providers;
 using Sciensoft.Hateoas.Repositories;
 using Sciensoft.Hateoas.WebSample.Models;
@@ -10,36 +9,30 @@ using Xunit;
 
 namespace Sciensoft.Hateoas.Tdd.Providers
 {
-	public class HateoasSelfUriProviderTests
+	public class HateoasRouteUriProviderTests
 	{
 		[Fact]
-		public void HateoasSelfUriProvider_Should_GenerateEndpoint_BasedOnRequest()
+		public void HateoasSelfUriProvider_Should_ReturnDefaultValue_IfControllerIsNotPresent()
 		{
 			// Arrange
 			Guid itemId = Guid.NewGuid();
 			Expression<Func<BookViewModel, object>> expression = x => x.Id;
-			var selfPolicy = new InMemoryPolicyRepository.SelfPolicy(typeof(BookViewModel), expression, "GetById")
-			{
-				Method = HttpMethods.Get
-			};
+			var selfPolicy = new InMemoryPolicyRepository.RoutePolicy(typeof(BookViewModel), expression, "GetById");
 
 			var helpers = TestHelper.GetHttpContextHelpers(
 				"/api/book",
 				new Dictionary<string, object>
 				{
-					{ "controller", "book" },
 					{ "action", "get" }
 				});
 
-			var uriProvider = new HateoasSelfUriProvider(helpers.ContextAccessor, helpers.LinkGenerator, helpers.ActionDescriptor);
+			var uriProvider = new HateoasRouteUriProvider(helpers.ContextAccessor, helpers.LinkGenerator, helpers.ActionDescriptor);
 
 			// Act
 			var results = uriProvider.GenerateEndpoint(selfPolicy, itemId);
 
 			// Assert
-			results.Should().NotBeNull();
-			results.Method.Should().Be(HttpMethods.Get);
-			results.Uri.Should().EndWith($"/api/book/{itemId}");
+			results.Should().Be(default);
 		}
 
 		[Fact]
@@ -55,7 +48,7 @@ namespace Sciensoft.Hateoas.Tdd.Providers
 				});
 
 			// Act
-			Func<HateoasSelfUriProvider> act = () => new HateoasSelfUriProvider(helpers.ContextAccessor, helpers.LinkGenerator, null);
+			Func<HateoasRouteUriProvider> act = () => new HateoasRouteUriProvider(helpers.ContextAccessor, helpers.LinkGenerator, null);
 
 			// Assert
 			act.Should().ThrowExactly<ArgumentNullException>();
