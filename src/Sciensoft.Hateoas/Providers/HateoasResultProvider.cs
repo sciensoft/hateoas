@@ -3,11 +3,9 @@ using Sciensoft.Hateoas.Extensions;
 using Sciensoft.Hateoas.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Threading.Tasks;
 
 namespace Sciensoft.Hateoas.Providers

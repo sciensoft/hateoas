@@ -19,25 +19,23 @@ namespace Sciensoft.Hateoas.Providers
 			LinkGenerator linkGenerator,
 			IActionDescriptorCollectionProvider actionDescriptorCollectionProvider)
 			: base(contextAccessor, linkGenerator)
-		{
-			_actionsProvider = actionDescriptorCollectionProvider ?? throw new ArgumentNullException(nameof(actionDescriptorCollectionProvider));
-		}
+			=> _actionsProvider = actionDescriptorCollectionProvider ?? throw new ArgumentNullException(nameof(actionDescriptorCollectionProvider));
 
 		public override (string Method, string Uri) GenerateEndpoint(InMemoryPolicyRepository.RoutePolicy policy, object result)
 		{
 			string targetRouteName = policy.RouteName;
 			var routeData = HttpContext.GetRouteData();
 
-			var controllerName = routeData.Values.FirstOrDefault(rv => rv.Key.Equals("controller")).Value.ToString();
+			var controllerName = routeData.Values.FirstOrDefault(rv => rv.Key.Equals("controller")).Value?.ToString();
 			if (string.IsNullOrWhiteSpace(controllerName))
 			{
 				return default;
 			}
 
-			var controllerRouteValues = _actionsProvider.ActionDescriptors.Items
+			var controllerDescriptor = _actionsProvider.ActionDescriptors.Items
 				.Where(r => r.RouteValues.Any(rv => rv.Value.Equals(controllerName)));
 
-			var routeInfo = controllerRouteValues
+			var routeInfo = controllerDescriptor
 				.FirstOrDefault(r =>
 					r.AttributeRouteInfo != null
 					&& r.AttributeRouteInfo.Name != null
@@ -46,7 +44,7 @@ namespace Sciensoft.Hateoas.Providers
 			if (routeInfo == null)
 			{
 				targetRouteName = null;
-				routeInfo = controllerRouteValues
+				routeInfo = controllerDescriptor
 					.FirstOrDefault(c => c.EndpointMetadata.Any(e =>
 						(e is HttpMethodAttribute)
 						&& ((HttpMethodAttribute)e).Name != null

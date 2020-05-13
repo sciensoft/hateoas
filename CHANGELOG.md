@@ -11,6 +11,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and thi
 - Endpoint/Controller policy configuration.
 - Distributed caching for processed links policies.
 
+**Changed:**
+
+- Code refactoring for better code readability.
+
 ## [Unreleased - 3.2.0] - 2020-05-13
 
 **Added:**
