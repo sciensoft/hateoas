@@ -9,7 +9,7 @@ A library to help you achieve HATEOAS using a fluent language and lambda express
 
 **The good thing is, there is no need to inheritance or additional code in your models or addition of extra result filters to support its functionality. They all come beautifully out of the box with `Sciensoft.Hateoas`**.
 
-Sciensoft.Hateoas threats lambda as first-class citizen, so your configuration starts with a lambda expression. This library DO NOT enforce <a href="https://rebrand.ly/restful-explained" target="_blank">REST constraints</a> or <a href="https://rebrand.ly/richardson-maturity-model" target="_blank">Richardson Maturity Level</a>, and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
+Sciensoft.Hateoas threats lambda as a first-class citizen, so your configuration starts with a lambda expression. This library DO NOT enforce <a href="https://rebrand.ly/restful-explained" target="_blank">REST constraints</a> or <a href="https://rebrand.ly/richardson-maturity-model" target="_blank">Richardson Maturity Level</a>, and this has to be done by you, Sciensoft.Hateoas helps you only with the implementation of HATEOAS in your resource.
 
 Learn more about RESTful API <a href="https://restfulapi.net/" target="_blank">here</a> and Lambda Expressions <a href="https://rebrand.ly/dotnet-lambda-expressions" target="_blank">here</a>.
 
@@ -94,7 +94,6 @@ public class BookController : ControllerBase
         "Murder",
         "Thriller"
     ],
-    "Reference": null,
     "links": [
         {
             "method": "GET",
@@ -105,14 +104,12 @@ public class BookController : ControllerBase
         {
             "method": "PUT",
             "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
-            "relation": "UpdateBookById",
-            "message": null
+            "relation": "UpdateBookById"
         },
         {
             "method": "DELETE",
             "uri": "http://localhost:6080/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
-            "relation": "DeleteBookById",
-            "message": null
+            "relation": "DeleteBookById"
         },
         {
             "method": "POST",
@@ -122,15 +119,14 @@ public class BookController : ControllerBase
         },
         {
             "method": "POST",
-            "uri": "http://localhost:6080/change/resource/state/%3fid=83389205-b1c9-4523-a3bb-85d7255546f9",
+            "uri": "http://localhost:6080/change/resource/state/?id=83389205-b1c9-4523-a3bb-85d7255546f9",
             "relation": "ChangeResourceState",
             "message": "Any operation in your resource."
         },
         {
             "method": "GET",
             "uri": "https://my-domain.com/api/books/83389205-b1c9-4523-a3bb-85d7255546f9",
-            "relation": "Custom Domain External Link",
-            "message": null
+            "relation": "Custom Domain External Link"
         },
         {
             "method": "GET",
@@ -144,6 +140,8 @@ public class BookController : ControllerBase
 
 ## Features
 
+- Collections result with links,
+- Json.NET and System.Text.Json settings support,
 - Self-link generation,
 - Named Route link generation,
 - Custom link generation with support to path override,
@@ -161,7 +159,7 @@ public class BookController : ControllerBase
 
 ## Contributions
 
-Before start contributing, check our [CONTRIBUTING] guideline out, also, before doing any significant change, have a look to the existing Issues and Pull Requests, one of them may be tackling the same thing.
+Before start contributing, check our [CONTRIBUTING] guideline out, also, before doing any significant change, have a look at the existing Issues and Pull Requests, one of them may be tackling the same thing.
 
 ## Issues
 
@@ -173,7 +171,7 @@ Copyright 2019 Sciensoft
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+You may obtain a copy of the License at [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 [## LINKS ##]: ----------------------------------------------------------
 
