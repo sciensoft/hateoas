@@ -1,0 +1,6 @@
+projectKey=Sciensoft.Hateoas.Sample
+serverUrl=http://localhost:9000
+serverVersion=7.9.3.33349
+dashboardUrl=http://localhost:9000/dashboard?id=Sciensoft.Hateoas.Sample
+ceTaskId=AXIrvFub1WZWS0RbMdDX
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AXIrvFub1WZWS0RbMdDX

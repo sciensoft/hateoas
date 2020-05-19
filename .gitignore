@@ -24,6 +24,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 .sonarqube/
+.scannerwork/
 
 # Coverlet
 coverage.*
