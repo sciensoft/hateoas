@@ -1,4 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Sciensoft.Hateoas.Tdd")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+[assembly: InternalsVisibleTo("Sciensoft.Hateoas.Tdd, PublicKey=00240000048000009400000006020000002400005253413100040000010001001da49bcb66503727e192ce974eee71bac33e79b6f0bb9bfc07666576472f2cd2b4102a30b1587649fdf04ac8b78e17d00c616e8cffcf38f172f4ab4d27995cb06dfd79c524f1aa90a8b5803a07ea4184e8ee4c3709c445c4cb6bd802b3c5a100c5fa22545bf549f6643855852d881da5f7df27157f6395a4ef41b9ec99ec0eb8")]
+//[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

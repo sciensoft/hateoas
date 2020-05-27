@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Sciensoft.Hateoas.Providers
 {
-	internal class HateoasExternalUriProvider : HateoasUriProvider<InMemoryPolicyRepository.ExternalPolicy>
+	internal sealed class HateoasExternalUriProvider : HateoasUriProvider<InMemoryPolicyRepository.ExternalPolicy>
 	{
 		public HateoasExternalUriProvider(IHttpContextAccessor contextAccessor, LinkGenerator linkGenerator)
 			: base(contextAccessor, linkGenerator)

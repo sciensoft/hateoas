@@ -18,12 +18,12 @@ namespace Sciensoft.Hateoas.Providers
 		/// <summary>
 		/// Http context accessor service of <see cref="IHttpContextAccessor"/>
 		/// </summary>
-		protected readonly IHttpContextAccessor ContextAccessor;
+		private protected readonly IHttpContextAccessor ContextAccessor;
 
 		/// <summary>
 		/// Link generation service of <see cref="Microsoft.AspNetCore.Routing.LinkGenerator"/> for defining a contract to generate absolute and related URIs based on endpoint routing.
 		/// </summary>
-		protected readonly LinkGenerator LinkGenerator;
+		private protected readonly LinkGenerator LinkGenerator;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HateoasUriProvider{TPolicy}"/> with the services provided.
@@ -39,17 +39,17 @@ namespace Sciensoft.Hateoas.Providers
 		/// <summary>
 		/// Encapsulates all HTTP-specific information about an individual HTTP request, <see cref="Microsoft.AspNetCore.Http.HttpContext"/>.
 		/// </summary>
-		protected HttpContext HttpContext => ContextAccessor.HttpContext;
+		private protected HttpContext HttpContext => ContextAccessor.HttpContext;
 
 		/// <summary>
 		/// Provides a collection of Microsoft.AspNetCore.Http.Endpoint instances, <see cref="Microsoft.AspNetCore.Routing.EndpointDataSource"/>.
 		/// </summary>
-		protected EndpointDataSource EndpointDataSource => HttpContext.RequestServices.GetRequiredService<EndpointDataSource>();
+		private protected EndpointDataSource EndpointDataSource => HttpContext.RequestServices.GetRequiredService<EndpointDataSource>();
 
 		/// <summary>
 		/// Provides current context protocal, host and port.
 		/// </summary>
-		protected string Host
+		private protected string Host
 		{
 			get
 			{
@@ -61,19 +61,11 @@ namespace Sciensoft.Hateoas.Providers
 		}
 
 		/// <summary>
-		/// Generates a link based on the policy configured.
-		/// </summary>
-		/// <param name="policy">A policy implementation of <see cref="InMemoryPolicyRepository.Policy"/>.</param>
-		/// <param name="result">The expression result.</param>
-		/// <returns></returns>
-		public abstract (string Method, string Uri) GenerateEndpoint(TPolicy policy, object result);
-
-		/// <summary>
 		/// Formats the path for link generation.
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		protected string GetFormatedPath(string path)
+		private protected string GetFormatedPath(string path)
 		{
 			if (path == null)
 			{
@@ -94,5 +86,13 @@ namespace Sciensoft.Hateoas.Providers
 
 			return path.ToLower();
 		}
+
+		/// <summary>
+		/// Generates a link based on the policy configured.
+		/// </summary>
+		/// <param name="policy">A policy implementation of <see cref="InMemoryPolicyRepository.Policy"/>.</param>
+		/// <param name="result">The expression result.</param>
+		/// <returns></returns>
+		public abstract (string Method, string Uri) GenerateEndpoint(TPolicy policy, object result);
 	}
 }

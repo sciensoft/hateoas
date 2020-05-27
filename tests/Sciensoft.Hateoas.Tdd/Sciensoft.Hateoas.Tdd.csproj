@@ -5,6 +5,9 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<IsPackable>false</IsPackable>
 		<LangVersion>latest</LangVersion>
+
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Sciensoft.Hateoas.Tdd.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>

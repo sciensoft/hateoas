@@ -13,11 +13,17 @@
 
 			Visit https://github.com/higtrollers/Sciensoft.Hateoas for more details and full documentation.
 		</Description>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		
 		<RepositoryUrl>https://github.com/higtrollers/Sciensoft.Hateoas</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/higtrollers/Sciensoft.Hateoas</PackageProjectUrl>
 		<PackageIconUrl>https://raw.githubusercontent.com/higtrollers/Sciensoft.Hateoas/master/.github/sciensoft.logo.64x64.jpg</PackageIconUrl>
 		<PackageTags>restfulapi;webapi;hateoas</PackageTags>
+
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Sciensoft.Hateoas.snk</AssemblyOriginatorKeyFile>
+		
 		<OutputType>Library</OutputType>
 	</PropertyGroup>
 

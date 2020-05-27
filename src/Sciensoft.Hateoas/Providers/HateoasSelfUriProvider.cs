@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Sciensoft.Hateoas.Providers
 {
-	internal class HateoasSelfUriProvider : HateoasUriProvider<InMemoryPolicyRepository.SelfPolicy>
+	internal sealed class HateoasSelfUriProvider : HateoasUriProvider<InMemoryPolicyRepository.SelfPolicy>
 	{
 		private readonly IActionDescriptorCollectionProvider _actionsProvider;
 

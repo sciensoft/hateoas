@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Sciensoft.Hateoas.Providers
 {
-	internal class HateoasCustomUriProvider : HateoasUriProvider<InMemoryPolicyRepository.CustomPolicy>
+	internal sealed class HateoasCustomUriProvider : HateoasUriProvider<InMemoryPolicyRepository.CustomPolicy>
 	{
 		public HateoasCustomUriProvider(IHttpContextAccessor contextAccessor, LinkGenerator linkGenerator)
 			: base(contextAccessor, linkGenerator)

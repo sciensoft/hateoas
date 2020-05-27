@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 
 namespace Sciensoft.Hateoas.Providers
 {
-	internal class HateoasRouteUriProvider : HateoasUriProvider<InMemoryPolicyRepository.RoutePolicy>
+	internal sealed class HateoasRouteUriProvider : HateoasUriProvider<InMemoryPolicyRepository.RoutePolicy>
 	{
 		private readonly IActionDescriptorCollectionProvider _actionsProvider;
 
