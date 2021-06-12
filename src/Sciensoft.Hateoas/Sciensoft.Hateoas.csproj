@@ -4,6 +4,9 @@
 		<ProjectGuid>{575C4CF2-AC92-4A9C-AFB9-85329FA0AC35}</ProjectGuid>
 		<AssemblyName>Sciensoft.Hateoas</AssemblyName>
 		<TargetFramework>netstandard2.1</TargetFramework>
+		<OutputType>Library</OutputType>
+
+		<Authors>Alexandre Souza</Authors>
 		<Description>
 			A library to help you achieve HATEOAS using a fluent language and lambda expression for configuring your ASP.NET Core RESTful/Web APIs. Based on the REST application architecture style, Uniform Interface, constraint Hypermedia As The Engine Of Application State (HATEOAS).
 
@@ -13,18 +16,17 @@
 
 			Visit https://github.com/higtrollers/Sciensoft.Hateoas for more details and full documentation.
 		</Description>
-		
 		<RepositoryUrl>https://github.com/higtrollers/Sciensoft.Hateoas</RepositoryUrl>
 		<PackageProjectUrl>https://github.com/higtrollers/Sciensoft.Hateoas</PackageProjectUrl>
+		<PackageLicenseUrl>https://raw.githubusercontent.com/higtrollers/Sciensoft.Hateoas/master/LICENSE</PackageLicenseUrl>
 		<PackageIconUrl>https://raw.githubusercontent.com/higtrollers/Sciensoft.Hateoas/master/.github/sciensoft.logo.64x64.jpg</PackageIconUrl>
-		<PackageTags>restfulapi;webapi;hateoas</PackageTags>
+		<PackageTags>restfulapi;webapi;hateoas;aspnetcore;netcore</PackageTags>
+		<Copyright>Sciensoft © 2020</Copyright>
 
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>Sciensoft.Hateoas.snk</AssemblyOriginatorKeyFile>
-		
-		<OutputType>Library</OutputType>
 	</PropertyGroup>
 
 	<ItemGroup>

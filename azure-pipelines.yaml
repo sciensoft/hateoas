@@ -14,81 +14,111 @@ trigger:
       - release/*
       - master
 
-steps:
-  - task: Bash@3
-    displayName: '♻️ Restore'
-    inputs:
-      targetType: 'inline'
-      script: dotnet restore src/**/Sciensoft.Hateoas.csproj --no-cache --verbosity minimal
 
-  - task: Bash@3
-    displayName: 'Install Sonar Scanner Tool'
-    continueOnError: true
-    inputs:
-      targetType: 'inline'
-      script: dotnet tool install dotnet-sonarscanner --tool-path $HOME/.dotnet/tools
+stages:
+  - stage: artifactsbuildstage
+    displayName: "🔧 Building"
+    jobs:
+      - job: artifactsbuild
+        displayName: "🔧 Building"
+        steps:
 
-  - task: Bash@3
-    displayName: 'Prepare Analysis on SonarCloud'
-    inputs:
-      targetType: 'inline'
-      script: $HOME/.dotnet/tools/dotnet-sonarscanner begin 
-        /k:$(sonar.sciensoft.project.key) 
-        /o:$(sonar.sciensoft.organization.key) 
-        /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/tests/**/coverage.opencover.xml" 
-        /d:sonar.host.url=https://sonarcloud.io 
-        /d:sonar.login=$(sonar.token)
-        /d:sonar.exclusions=samples/**/*.cs,
-        /d:sonar.test.exclusions=tests/**/*.cs
+          - task: Bash@3
+            displayName: '♻️ Restore'
+            inputs:
+              targetType: 'inline'
+              script: dotnet restore src/**/Sciensoft.Hateoas.csproj --no-cache --verbosity minimal
+
+          - task: Bash@3
+            displayName: 'Install Sonar Scanner Tool'
+            continueOnError: true
+            inputs:
+              targetType: 'inline'
+              script: dotnet tool install dotnet-sonarscanner --tool-path $HOME/.dotnet/tools
+
+          - task: Bash@3
+            displayName: 'Prepare Analysis on SonarCloud'
+            inputs:
+              targetType: 'inline'
+              script: $HOME/.dotnet/tools/dotnet-sonarscanner begin 
+                /k:$(sonar.sciensoft.project.key) 
+                /o:$(sonar.sciensoft.organization.key) 
+                /d:sonar.cs.opencover.reportsPaths="$(Build.SourcesDirectory)/tests/**/coverage.opencover.xml" 
+                /d:sonar.host.url=https://sonarcloud.io 
+                /d:sonar.login=$(sonar.token)
+                /d:sonar.exclusions=samples/**/*.cs,
+                /d:sonar.test.exclusions=tests/**/*.cs
   
-  - task: Bash@3
-    displayName: '🔧 Build'
-    inputs:
-      targetType: 'inline'
-      script: dotnet build *.sln
+          - task: Bash@3
+            displayName: '🔧 Build'
+            inputs:
+              targetType: 'inline'
+              script: dotnet build *.sln
 
-  - task: Bash@3
-    displayName: '🧪 Tests & 🔬 Code Coverage'
-    inputs:
-      targetType: 'inline'
-      script: dotnet test tests/**/*.Tdd.csproj --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover,cobertura\" /p:Exclude="[Sciensoft.Hateoas.WebSample]*"
+          - task: Bash@3
+            displayName: '🧪 Tests & 🔬 Code Coverage'
+            inputs:
+              targetType: 'inline'
+              script: dotnet test tests/**/*.Tdd.csproj --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=\"opencover,cobertura\" /p:Exclude="[Sciensoft.Hateoas.WebSample]*"
 
-  - task: UseGitVersion@5
-    displayName: 'Semantic Versioning'
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
-    inputs:
-      versionSpec: '5.x'
-      updateAssemblyInfo: false
+          - task: UseGitVersion@5
+            displayName: 'Semantic Versioning'
+            condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+            inputs:
+              versionSpec: '5.x'
+              updateAssemblyInfo: false
 
-  - task: Bash@3
-    displayName: '📦 Pack'
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
-    inputs:
-      targetType: 'inline'
-      script: dotnet pack src/**/Sciensoft.Hateoas.csproj -c release -o $(build.artifactstagingdirectory) /p:PackageVersion=$(GitVersion.NuGetVersion) --include-symbols --include-source --verbosity normal
+          - task: Bash@3
+            displayName: '📦 Pack'
+            condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+            inputs:
+              targetType: 'inline'
+              script: dotnet pack src/**/Sciensoft.Hateoas.csproj -c release -o $(Pipeline.Workspace)/bin/hateoas -p:PackageVersion=$(GitVersion.NuGetVersion) -p:Version=$(GitVersion.NuGetVersion) -p:AssemblyVersion=$(GitVersion.Major).0.0.0 -p:FileVersion=$(GitVersion.NuGetVersion).$(Build.BuildNumber) --include-symbols --include-source --verbosity normal
 
-  - task: Bash@3
-    displayName: 'Publish SonarCloud Quality Gate Results'
-    inputs:
-      targetType: 'inline'
-      script: $HOME/.dotnet/tools/dotnet-sonarscanner end /d:sonar.login=$(sonar.token)
+          - task: Bash@3
+            displayName: 'Publish SonarCloud Quality Gate Results'
+            inputs:
+              targetType: 'inline'
+              script: $HOME/.dotnet/tools/dotnet-sonarscanner end /d:sonar.login=$(sonar.token)
 
-  - task: PublishTestResults@2
-    displayName: '🧪 Publish Test Results'
-    inputs:
-      testResultsFormat: 'VSTest'
-      testResultsFiles: 'tests/**/*.trx'
-      failTaskOnFailedTests: true
+          - task: PublishTestResults@2
+            displayName: '🧪 Publish Test Results'
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: 'tests/**/*.trx'
+              failTaskOnFailedTests: true
 
-  - task: PublishCodeCoverageResults@1
-    displayName: '🔬 Publish Code Coverage Results'
-    inputs:
-      codeCoverageTool: cobertura
-      summaryFileLocation: tests/**/coverage.opencover.xml
+          - task: PublishCodeCoverageResults@1
+            displayName: '🔬 Publish Code Coverage Results'
+            inputs:
+              codeCoverageTool: cobertura
+              summaryFileLocation: tests/**/coverage.opencover.xml
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact'
-    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
-    inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      artifactName: drop
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact'
+            condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), eq(variables['Build.SourceBranch'], 'refs/heads/master')))
+            inputs:
+              PathtoPublish: $(Pipeline.Workspace)/bin/hateoas
+              artifactName: hateoas-drop
+
+  - stage: artifactspushstage
+    displayName: "📤 Publishing"
+    dependsOn: artifactsbuildstage
+    condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main')))
+    jobs:
+      - job: artifactspush
+        displayName: "📤 Publishing"
+        steps:
+
+          - download: current
+            artifact: hateoas-drop
+
+          - task: NuGetCommand@2
+            displayName: 'Publish Artifacts'
+            condition: and(succeeded(), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), in(variables['Build.SourceBranch'], 'refs/heads/develop', 'refs/heads/main')))
+            inputs:
+              command: 'push'
+              packagesToPush: '$(pipeline.workspace)/**/*.nupkg'
+              nuGetFeedType: 'internal'
+              publishVstsFeed: 'TODO-Add-Feed-Id'
+              verbosityPush: 'Normal'
