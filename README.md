@@ -50,7 +50,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-Here is how your controller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out!
+Here is how your controller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out! There, you can also find how to configure our library if you have registered MVC to your application with another MvcServiceCollectionExtensions-method than `services.AddMvc()`.
 
 ```csharp
 [Route("api/books")]
