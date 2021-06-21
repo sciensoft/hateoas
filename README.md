@@ -49,8 +49,9 @@ public void ConfigureServices(IServiceCollection services)
     });
 }
 ```
+Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out! There, you can also find examples of how to configure our library if you have registered MVC to your application with a MvcServiceCollectionExtensions-method other than `services.AddMvc()`.
 
-Here is how your controller looks like, no additional injection or attribute decoration is required. Please check our [Sample Project](./samples/Sciensoft.Hateoas.WebSample) out!
+Here is how your controller looks like, no additional injection or attribute decoration is required. 
 
 ```csharp
 [Route("api/books")]
