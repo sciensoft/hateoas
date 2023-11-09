@@ -336,3 +336,6 @@ ASALocalRun/
 #vscode
 .vscode/
 ```
+#mac os files
+.DS_Store
+
