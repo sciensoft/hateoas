@@ -85,15 +85,17 @@ public class BookController : ControllerBase
 
 ```json
 {
-    "Id": "8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
-    "Title": "The Girl Who Lived: A Thrilling Suspense Novel",
-    "Author": "Christopher Greyson",
-    "Tags": [
-        "Fiction",
-        "Crime",
-        "Murder",
-        "Thriller"
-    ],
+    "data": {
+        "Id": "8f46d29e-6c0d-4511-85e7-b1d7ae42934a",
+        "Title": "The Girl Who Lived: A Thrilling Suspense Novel",
+        "Author": "Christopher Greyson",
+        "Tags": [
+            "Fiction",
+            "Crime",
+            "Murder",
+            "Thriller"
+        ]
+    },
     "links": [
         {
             "method": "GET",
